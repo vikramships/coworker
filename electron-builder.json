@@ -1,0 +1,41 @@
+{
+    "appId": "com.cowork.app",
+    "productName": "Cowork",
+    "files": [
+        "dist-electron",
+        "dist-react",
+        "!**/node_modules/@anthropic-ai/claude-agent-sdk/vendor/ripgrep/*-{linux,win32}/**",
+        "!**/node_modules/@anthropic-ai/claude-agent-sdk/vendor/ripgrep/x64-*"
+    ],
+    "extraResources": [
+        "dist-electron/preload.cjs"
+    ],
+    "asarUnpack": [
+        "node_modules/@anthropic-ai/claude-agent-sdk/**/*",
+        "node_modules/better-sqlite3/**/*"
+    ],
+    "icon": "./claude-color.png",
+    "afterSign": "scripts/after-sign.cjs",
+
+    "mac": {
+        "target": "dmg",
+        "hardenedRuntime": true,
+        "entitlements": "entitlements.plist",
+        "entitlementsInherit": "entitlements.plist",
+        "files": [
+            "**/*",
+            "!**/node_modules/@anthropic-ai/claude-agent-sdk/vendor/ripgrep/*-{linux,win32}/**",
+            "!**/node_modules/@anthropic-ai/claude-agent-sdk/vendor/ripgrep/x64-darwin/**"
+        ]
+    },
+    "linux": {
+        "target": "AppImage",
+        "category": "Utility"
+    },
+    "win": {
+        "target": [
+            "portable",
+            "msi"
+        ]
+    }
+}
