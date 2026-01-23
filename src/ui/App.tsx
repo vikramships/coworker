@@ -236,9 +236,11 @@ function App() {
           <div className="mx-auto max-w-none lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl 3xl:max-w-none">
             {messages.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-20 text-center animate-fade-in">
-                <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-accent-500/20 to-accent-600/20 flex items-center justify-center mb-6 shadow-lg border border-accent-500/10">
-                  <svg className="h-10 w-10 text-accent-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+                <div className="w-20 h-20 rounded-3xl bg-[#0F0F1A] flex items-center justify-center mb-6 shadow-xl border border-white/5">
+                  <svg className="h-10 w-10" viewBox="0 0 512 512" fill="none">
+                    <path d="M360 160C330 130 290 120 245 120C165 120 105 180 105 256C105 332 165 392 245 392C290 392 330 382 360 352"
+                      stroke="#F5A623" strokeWidth="56" strokeLinecap="round" />
+                    <rect x="250" y="232" width="130" height="48" rx="24" fill="#F5A623" />
                   </svg>
                 </div>
                 <div className="text-xl font-semibold text-ink-800 mb-2">Welcome to Coworker</div>

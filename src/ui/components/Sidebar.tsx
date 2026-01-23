@@ -125,9 +125,10 @@ export function Sidebar({
         <div className="flex flex-col gap-3 px-3 pb-4 pt-12 lg:pt-14">
           {/* Logo on mobile */}
           <div className="flex items-center gap-2 px-2 lg:hidden">
-            <div className="w-8 h-8 rounded-xl bg-accent-500 flex items-center justify-center">
-              <svg className="h-5 w-5 text-white" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" />
+            <div className="w-8 h-8 rounded-lg bg-[#0F0F1A] flex items-center justify-center border border-white/5">
+              <svg className="h-5 w-5" viewBox="0 0 512 512" fill="none">
+                <path d="M360 160C330 130 290 120 245 120C165 120 105 180 105 256C105 332 165 392 245 392C290 392 330 382 360 352" stroke="#F5A623" strokeWidth="60" strokeLinecap="round" />
+                <rect x="250" y="232" width="130" height="48" rx="24" fill="#F5A623" />
               </svg>
             </div>
             <span className="text-lg font-semibold text-ink-800">Coworker</span>
