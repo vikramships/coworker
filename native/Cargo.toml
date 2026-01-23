@@ -1,0 +1,27 @@
+[package]
+name = "cowork-sqlite"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+napi = { version = "2.16.13", default-features = false, features = ["napi8", "tokio_rt", "serde-json"] }
+napi-derive = "2.16.13"
+rusqlite = { version = "0.32.1", features = ["bundled"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1.0", features = ["rt", "rt-multi-thread", "process", "io-util", "macros", "test-util"] }
+lsp-server = "0.7"
+lsp-types = "0.95"
+anyhow = "1.0"
+futures = "0.3"
+async-trait = "0.1"
+tower-lsp = "0.20"
+git2 = "0.18"
+tempfile = "3.0"
+
+[build-dependencies]
+napi-build = "2.1.4"

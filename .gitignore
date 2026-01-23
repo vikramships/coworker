@@ -1,0 +1,74 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-react
+dist-electron
+*.local
+
+# Development cache
+.vite/
+.cache/
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Environment variables
+.env
+.env.local
+.env.production
+.env.development
+
+# Build outputs
+build/
+out/
+*.exe
+*.dmg
+*.pkg
+*.deb
+*.rpm
+*.snap
+*.appimage
+
+# Rust build artifacts
+native/target/
+*.rlib
+*.rmeta
+
+# Lock files (optional - choose one)
+# bun.lock
+# package-lock.json
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Temporary files
+*.tmp
+*.temp
+*~

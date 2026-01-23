@@ -1,0 +1,27 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e1e3f"/>
+      <stop offset="100%" style="stop-color:#141428"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="256" height="256" rx="56" fill="url(#bgGrad)"/>
+
+  <!-- Abstract CW monogram - C and W combined -->
+  <g transform="translate(128, 128)">
+    <!-- Main C shape -->
+    <path d="M-50 -60 L-50 -20 Q-50 0 -30 0 L-10 0 L-10 60 Q-10 80 -30 80 L-50 80 L-50 120 L20 120 Q70 120 90 70 Q110 20 90 -30 Q70 -60 20 -60 Z"
+          fill="#f5a623"/>
+
+    <!-- Overlapping W/coworker shape -->
+    <path d="M10 -60 L10 0 Q10 20 30 20 L50 20 L50 60 Q50 80 30 80 L10 80 L10 120 L30 120 Q80 120 110 70 Q140 20 110 -30 Q80 -60 30 -60 Z"
+          fill="#f7b731" opacity="0.85"/>
+
+    <!-- AI sparkle -->
+    <circle cx="85" cy="-55" r="10" fill="#f5a623">
+      <animate attributeName="opacity" values="0.5;1;0.5" dur="3s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+</svg>
