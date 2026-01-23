@@ -80,5 +80,3 @@ src/
 4. Run tests and linting
 5. Submit a pull request
 
-## License
-
