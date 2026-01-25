@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { PermissionResult } from "@anthropic-ai/claude-agent-sdk";
 import { useIPC } from "./hooks/useIPC";
 import { useTheme } from "./hooks/useTheme";
+import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
 import { useAppStore, useShallow } from "./store/useAppStore";
 import type { ServerEvent } from "./types";
 import { Sidebar } from "./components/Sidebar";
@@ -14,6 +15,7 @@ import { PromptInput, usePromptActions } from "./components/PromptInput";
 import { MessageCard } from "./components/EventCard";
 import { ToastContainer } from "./components/Toast";
 import { FileTree } from "./components/FileTree";
+import { CommandPalette, useCommandPalette } from "./components/CommandPalette";
 import MDContent from "./render/markdown";
 
 function App() {
@@ -28,6 +30,9 @@ function App() {
   const [rightPanelOpen, setRightPanelOpen] = useState(false);
   const [defaultCwd, setDefaultCwd] = useState<string>('~');
   const [showOnboarding, setShowOnboarding] = useState(false);
+  
+  // Command palette
+  const { isOpen: isCommandPaletteOpen, open: openCommandPalette, close: closeCommandPalette } = useCommandPalette();
 
   // Get home directory on mount
   useEffect(() => {
@@ -202,6 +207,26 @@ function App() {
     sendEvent({ type: "permission.response", payload: { sessionId: activeSessionId, toolUseId, result } });
     resolvePermissionRequest(activeSessionId, toolUseId);
   }, [activeSessionId, sendEvent, resolvePermissionRequest]);
+
+  // Keyboard shortcuts (after handleNewSession is defined)
+  useKeyboardShortcuts({
+    "toggle-command-palette": openCommandPalette,
+    "toggle-files": () => setRightPanelOpen(prev => !prev),
+    "toggle-sidebar": () => {
+      if (sidebarCollapsed) {
+        setSidebarCollapsed(false);
+        setSidebarOpen(true);
+      } else {
+        setSidebarOpen(prev => !prev);
+      }
+    },
+    "new-session": handleNewSession,
+    "open-settings": () => setShowSettingsModal(true),
+    "go-to-chat": () => {
+      const input = document.querySelector('textarea[placeholder*="Describe"]') as HTMLTextAreaElement;
+      input?.focus();
+    },
+  }, !showOnboarding && !showStartModal && !showSettingsModal);
 
   return (
     <div className="flex min-h-screen bg-surface">
@@ -459,6 +484,9 @@ function App() {
           }}
         />
       )}
+
+      {/* Command Palette */}
+      <CommandPalette isOpen={isCommandPaletteOpen} onClose={closeCommandPalette} />
 
       {/* Toast notifications */}
       <ToastContainer />

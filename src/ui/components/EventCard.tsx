@@ -170,12 +170,6 @@ const StatusDot = ({ variant = "accent", isActive = false, isVisible = true }: {
 
 
 
-function isMarkdown(text: string): boolean {
-  if (!text || typeof text !== "string") return false;
-  const patterns: RegExp[] = [/^#{1,6}\s+/m, /```[\s\S]*?```/];
-  return patterns.some((pattern) => pattern.test(text));
-}
-
 function extractTagContent(input: string, tag: string): string | null {
   const match = input.match(new RegExp(`<${tag}>([\\s\\S]*?)</${tag}>`));
   return match ? match[1] : null;
@@ -217,7 +211,6 @@ const ToolResult = ({ messageContent }: { messageContent: ToolResultContent }) =
   }
 
   const contentText = lines.join("\n");
-  const isMarkdownContent = isMarkdown(contentText);
   const hasMoreLines = lines.length > MAX_VISIBLE_LINES;
   const visibleContent = hasMoreLines && !isExpanded ? lines.slice(0, MAX_VISIBLE_LINES).join("\n") : contentText;
 
@@ -238,9 +231,9 @@ const ToolResult = ({ messageContent }: { messageContent: ToolResultContent }) =
         : "bg-surface-secondary border-ink-900/5 shadow-sm"
         }`}>
         <div className="p-4">
-          <pre className={`text-[13px] leading-relaxed whitespace-pre-wrap break-words font-mono ${isError ? "text-error" : "text-ink-700"
+          <pre className={`text-[13px] leading-relaxed whitespace-pre-wrap break-words font-mono overflow-x-auto ${isError ? "text-error" : "text-ink-700"
             }`}>
-            {isMarkdownContent ? <MDContent text={visibleContent} /> : String(visibleContent || "")}
+            {visibleContent}
           </pre>
         </div>
         {hasMoreLines && (
