@@ -164,3 +164,35 @@ export function savePreferences(prefs: Partial<AppPreferences>): void {
   config.preferences = { ...config.preferences, ...prefs };
   saveFullConfig(config);
 }
+
+// Legacy compatibility functions (for backward compatibility)
+export function loadApiConfig(): AppConfig | null {
+  const fullConfig = loadFullConfig();
+  return fullConfig.api;
+}
+
+export function saveApiConfig(config: AppConfig): void {
+  const fullConfig = loadFullConfig();
+  fullConfig.api = config;
+  saveFullConfig(fullConfig);
+}
+
+export function getActiveProviderConfig(): { apiKey: string; baseURL: string; model: string; apiType: ApiType } | null {
+  const config = loadApiConfig();
+  if (!config) return null;
+
+  const activeProvider = config.providers.find(p => p.id === config.activeProvider);
+  if (!activeProvider) return null;
+
+  return {
+    apiKey: activeProvider.apiKey,
+    baseURL: activeProvider.baseURL,
+    model: activeProvider.model,
+    apiType: activeProvider.apiType
+  };
+}
+
+export function getEffectiveTheme(theme: Theme = "system"): "light" | "dark" {
+  if (theme !== "system") return theme;
+  return "light";
+}

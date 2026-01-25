@@ -5,11 +5,13 @@ import { getStaticData, pollResources } from "./test.js";
 import { handleClientEvent, sessions } from "./ipc-handlers.js";
 import { generateSessionTitle } from "./libs/util.js";
 import type { ClientEvent } from "./types.js";
-import { loadFullConfig, saveFullConfig, completeOnboarding, getUserProfile, saveUserProfile, getAiProfile, saveAiProfile, getPreferences, savePreferences, loadApiConfig, saveApiConfig, type Theme, type AppConfig } from "./libs/config-store.js";
+import { loadFullConfig, saveFullConfig, completeOnboarding, getUserProfile, saveUserProfile, getAiProfile, saveAiProfile, getPreferences, savePreferences, loadApiConfig, saveApiConfig, hasCompletedOnboarding, type Theme, type AppConfig, type ProviderConfig } from "./libs/config-store.js";
 import { shell } from "electron";
-import { join, dirname, homedir } from "path";
-import { writeFileSync, existsSync, mkdirSync, readdirSync, statSync, readdir as readdirSync } from "fs";
+import { join, dirname } from "path";
+import { homedir } from "os";
+import { writeFileSync, existsSync, mkdirSync, readdirSync, statSync } from "fs";
 import { readFile as readFilePromise, writeFile as writeFilePromise } from "fs/promises";
+import { readdir } from "fs/promises";
 import "./libs/claude-settings.js";
 
 app.on("ready", () => {
@@ -174,7 +176,7 @@ app.on("ready", () => {
                 return { success: false, error: "Cannot remove the last provider" };
             }
 
-            const newProviders = config.providers.filter(p => p.id !== providerId);
+            const newProviders = config.providers.filter((p: ProviderConfig) => p.id !== providerId);
             let newActiveProvider = config.activeProvider;
             if (config.activeProvider === providerId) {
                 newActiveProvider = newProviders[0].id;
@@ -197,7 +199,7 @@ app.on("ready", () => {
         const config = loadApiConfig();
         if (!config) return null;
 
-        const activeProvider = config.providers.find(p => p.id === config.activeProvider);
+        const activeProvider = config.providers.find((p: ProviderConfig) => p.id === config.activeProvider);
         if (!activeProvider) return null;
 
         return {
