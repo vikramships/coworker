@@ -10,6 +10,7 @@ interface SidebarProps {
   onOpenSettings: () => void;
   isOpen?: boolean;
   onClose?: () => void;
+  onCollapse?: () => void;
 }
 
 const STATUS_COLORS: Record<string, string> = {
@@ -31,7 +32,8 @@ export function Sidebar({
   onDeleteSession,
   onOpenSettings,
   isOpen = false,
-  onClose
+  onClose,
+  onCollapse
 }: SidebarProps) {
   const sessions = useAppStore((state) => state.sessions);
   const activeSessionId = useAppStore((state) => state.activeSessionId);
@@ -123,15 +125,26 @@ export function Sidebar({
         />
 
         <div className="flex flex-col gap-3 px-3 pb-4 pt-12 lg:pt-14">
-          {/* Logo on mobile */}
-          <div className="flex items-center gap-2 px-2 lg:hidden">
-            <div className="w-8 h-8 rounded-lg bg-[#0F0F1A] flex items-center justify-center border border-white/5">
-              <svg className="h-5 w-5" viewBox="0 0 512 512" fill="none">
-                <path d="M360 160C330 130 290 120 245 120C165 120 105 180 105 256C105 332 165 392 245 392C290 392 330 382 360 352" stroke="#F5A623" strokeWidth="60" strokeLinecap="round" />
-                <rect x="250" y="232" width="130" height="48" rx="24" fill="#F5A623" />
-              </svg>
+          {/* Header with collapse button */}
+          <div className="flex items-center justify-between px-2">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-[#0F0F1A] flex items-center justify-center border border-white/5">
+                <svg className="h-5 w-5" viewBox="0 0 512 512" fill="none">
+                  <path d="M360 160C330 130 290 120 245 120C165 120 105 180 105 256C105 332 165 392 245 392C290 392 330 382 360 352" stroke="#F5A623" strokeWidth="60" strokeLinecap="round" />
+                  <rect x="250" y="232" width="130" height="48" rx="24" fill="#F5A623" />
+                </svg>
+              </div>
+              <span className="text-lg font-semibold text-ink-800">Coworker</span>
             </div>
-            <span className="text-lg font-semibold text-ink-800">Coworker</span>
+            <button
+              className="p-1.5 rounded-lg text-muted hover:text-ink-600 hover:bg-surface-secondary transition-colors"
+              onClick={onCollapse}
+              title="Collapse sidebar"
+            >
+              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M15 18l-6-6 6-6" />
+              </svg>
+            </button>
           </div>
 
           {/* New Session Button */}

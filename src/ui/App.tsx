@@ -5,11 +5,15 @@ import { useTheme } from "./hooks/useTheme";
 import { useAppStore, useShallow } from "./store/useAppStore";
 import type { ServerEvent } from "./types";
 import { Sidebar } from "./components/Sidebar";
+import { CompactSidebar } from "./components/CompactSidebar";
+import { ResizablePanel } from "./components/ResizablePanel";
 import { StartSessionModal } from "./components/StartSessionModal";
 import { SettingsModal } from "./components/SettingsModal";
 import { PromptInput, usePromptActions } from "./components/PromptInput";
 import { MessageCard } from "./components/EventCard";
 import { ToastContainer } from "./components/Toast";
+import { FileTree } from "./components/FileTree";
+import { Terminal } from "./components/Terminal";
 import MDContent from "./render/markdown";
 
 function App() {
@@ -20,6 +24,9 @@ function App() {
   const [partialMessage, setPartialMessage] = useState("");
   const [showPartialMessage, setShowPartialMessage] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(true); // Default to collapsed
+  const [rightPanelOpen, setRightPanelOpen] = useState(false);
+  const [rightPanelTab, setRightPanelTab] = useState<'files' | 'terminal'>('files');
 
   // Consolidated state selectors to prevent multiple re-renders
   const appState = useAppStore(useShallow((s) => ({
@@ -175,25 +182,107 @@ function App() {
 
   return (
     <div className="flex min-h-screen bg-surface">
-      {/* Sidebar - responsive positioning */}
-      <Sidebar
-        connected={connected}
-        onNewSession={handleNewSession}
-        onDeleteSession={handleDeleteSession}
-        onOpenSettings={() => setShowSettingsModal(true)}
-        isOpen={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
-      />
+      {/* Sidebar - collapsible with compact mode */}
+      {sidebarCollapsed ? (
+        <CompactSidebar
+          connected={connected}
+          onNewSession={handleNewSession}
+          onOpenSettings={() => setShowSettingsModal(true)}
+          isOpen={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
+          onExpand={() => setSidebarCollapsed(false)}
+        />
+      ) : (
+        <Sidebar
+          connected={connected}
+          onNewSession={handleNewSession}
+          onDeleteSession={handleDeleteSession}
+          onOpenSettings={() => setShowSettingsModal(true)}
+          isOpen={sidebarOpen}
+          onClose={() => { setSidebarOpen(false); setSidebarCollapsed(true); }}
+          onCollapse={() => setSidebarCollapsed(true)}
+        />
+      )}
+
+      {/* Right Panel - File Explorer & Terminal */}
+      <ResizablePanel
+        defaultWidth={320}
+        minWidth={280}
+        maxWidth={500}
+        side="right"
+        className={`border-l border-ink-900/10 bg-surface-secondary/30 ${rightPanelOpen ? '' : 'hidden'}`}
+      >
+        <div className="flex flex-col h-full">
+          {/* Right Panel Tabs */}
+          <div className="flex items-center border-b border-ink-900/10 px-2">
+            <button
+              className={`px-4 py-3 text-sm font-medium transition-colors border-b-2 ${
+                rightPanelTab === 'files'
+                  ? "text-accent-600 border-accent-500"
+                  : "text-muted hover:text-ink-600 border-transparent"
+              }`}
+              onClick={() => setRightPanelTab('files')}
+            >
+              <span className="flex items-center gap-2">
+                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z" />
+                </svg>
+                Files
+              </span>
+            </button>
+            <button
+              className={`px-4 py-3 text-sm font-medium transition-colors border-b-2 ${
+                rightPanelTab === 'terminal'
+                  ? "text-accent-600 border-accent-500"
+                  : "text-muted hover:text-ink-600 border-transparent"
+              }`}
+              onClick={() => setRightPanelTab('terminal')}
+            >
+              <span className="flex items-center gap-2">
+                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polyline points="4 17 10 11 4 5" />
+                  <line x1="12" y1="19" x2="20" y2="19" />
+                </svg>
+                Terminal
+              </span>
+            </button>
+            <button
+              className="ml-auto p-2 text-muted hover:text-ink-600 hover:bg-surface-secondary rounded-lg transition-colors"
+              onClick={() => setRightPanelOpen(false)}
+              aria-label="Close panel"
+            >
+              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M6 6l12 12M18 6l-12 12" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Panel Content */}
+          <div className="flex-1 overflow-hidden">
+            {rightPanelTab === 'files' ? (
+              <div className="h-full overflow-y-auto">
+                <FileTree rootPath={cwd || '/root'} onFileSelect={(path) => console.log('File selected:', path)} />
+              </div>
+            ) : (
+              <div className="h-full">
+                <Terminal cwd={cwd || '~'} className="h-full" onCommand={(cmd) => console.log('Command:', cmd)} />
+              </div>
+            )}
+          </div>
+        </div>
+      </ResizablePanel>
 
       {/* Main content area */}
-      <main className="flex-1 flex flex-col min-w-0 bg-surface-cream pt-12 lg:pt-0 h-full lg:ml-[260px] ml-0">
+      <main className={`flex-1 flex flex-col min-w-0 bg-surface-cream pt-12 lg:pt-0 h-full transition-all duration-300 ${
+        sidebarCollapsed ? 'lg:ml-[72px]' : 'lg:ml-[200px]'
+      } ${rightPanelOpen ? 'mr-[320px]' : ''}`}>
         {/* Header bar with drag region */}
         <header
           className="flex items-center justify-between h-16 px-4 border-b border-ink-900/10 bg-surface-cream select-none shrink-0 cursor-move"
           style={{ WebkitAppRegion: 'drag' } as React.CSSProperties}
         >
-          {/* Logo and title */}
-          <div className="flex items-center gap-3">
+          {/* Left section */}
+          <div className="flex items-center gap-2">
             {/* Mobile menu button */}
             <button
               className="lg:hidden p-2 rounded-lg text-ink-500 hover:text-ink-700 hover:bg-surface-secondary transition-colors"
@@ -213,11 +302,63 @@ function App() {
               <span>Ready</span>
             </div>
           </div>
-          <h1 className="text-sm font-medium text-ink-700">
+
+          {/* Center - Session Title */}
+          <h1 className="text-sm font-medium text-ink-700 truncate max-w-xs lg:max-w-md">
             {activeSession?.title || "Coworker"}
           </h1>
-          {/* Right side actions */}
-          <div className="flex items-center gap-2" style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}>
+
+          {/* Right section - Toolbar */}
+          <div className="flex items-center gap-1" style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}>
+            {/* Toggle Files Panel */}
+            <button
+              className={`p-2 rounded-lg transition-colors ${
+                rightPanelOpen && rightPanelTab === 'files'
+                  ? "text-accent-600 bg-accent-50"
+                  : "text-ink-500 hover:text-ink-700 hover:bg-surface-secondary"
+              }`}
+              title="Toggle File Explorer"
+              onClick={() => {
+                if (rightPanelOpen && rightPanelTab === 'files') {
+                  setRightPanelOpen(false);
+                } else {
+                  setRightPanelOpen(true);
+                  setRightPanelTab('files');
+                }
+              }}
+            >
+              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z" />
+              </svg>
+            </button>
+
+            {/* Toggle Terminal Panel */}
+            <button
+              className={`p-2 rounded-lg transition-colors ${
+                rightPanelOpen && rightPanelTab === 'terminal'
+                  ? "text-accent-600 bg-accent-50"
+                  : "text-ink-500 hover:text-ink-700 hover:bg-surface-secondary"
+              }`}
+              title="Toggle Terminal"
+              onClick={() => {
+                if (rightPanelOpen && rightPanelTab === 'terminal') {
+                  setRightPanelOpen(false);
+                } else {
+                  setRightPanelOpen(true);
+                  setRightPanelTab('terminal');
+                }
+              }}
+            >
+              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="4 17 10 11 4 5" />
+                <line x1="12" y1="19" x2="20" y2="19" />
+              </svg>
+            </button>
+
+            {/* Divider */}
+            <div className="w-px h-6 bg-ink-900/10 mx-1" />
+
+            {/* Settings */}
             <button
               className="p-2 rounded-lg text-ink-500 hover:text-ink-700 hover:bg-surface-secondary transition-colors"
               title="Settings"
@@ -233,9 +374,9 @@ function App() {
 
         {/* Messages area */}
         <div className="flex-1 overflow-y-auto px-4 pb-32 pt-6 sm:px-6 lg:px-8 bg-surface-cream dark:bg-surface">
-          <div className="mx-auto max-w-none lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl 3xl:max-w-none">
+          <div className="mx-auto max-w-4xl xl:max-w-5xl">
             {messages.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-20 text-center animate-fade-in">
+              <div className="flex flex-col items-center justify-center min-h-[60vh] text-center animate-fade-in">
                 <div className="w-20 h-20 rounded-3xl bg-[#0F0F1A] flex items-center justify-center mb-6 shadow-xl border border-white/5">
                   <svg className="h-10 w-10" viewBox="0 0 512 512" fill="none">
                     <path d="M360 160C330 130 290 120 245 120C165 120 105 180 105 256C105 332 165 392 245 392C290 392 330 382 360 352"
@@ -244,18 +385,29 @@ function App() {
                   </svg>
                 </div>
                 <div className="text-xl font-semibold text-ink-800 mb-2">Welcome to Coworker</div>
-                <p className="text-sm text-muted max-w-md mb-6 leading-relaxed">
+                <p className="text-sm text-muted max-w-md mb-8 leading-relaxed">
                   Start a new session to collaborate with Claude Code. Describe your task, and we'll get started building something amazing together.
                 </p>
-                <button
-                  onClick={handleNewSession}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-accent-500 hover:bg-accent-600 text-white text-sm font-medium shadow-sm transition-all duration-200 hover:shadow-md active:scale-[0.98]"
-                >
-                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M12 5v14M5 12h14" />
-                  </svg>
-                  Start New Session
-                </button>
+                <div className="flex items-center gap-4">
+                  <button
+                    onClick={handleNewSession}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-accent-500 hover:bg-accent-600 text-white text-sm font-medium shadow-sm transition-all duration-200 hover:shadow-md active:scale-[0.98]"
+                  >
+                    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M12 5v14M5 12h14" />
+                    </svg>
+                    Start New Session
+                  </button>
+                  <button
+                    onClick={() => { setRightPanelOpen(true); setRightPanelTab('files'); }}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-ink-900/10 bg-surface hover:bg-surface-secondary text-ink-700 text-sm font-medium transition-colors"
+                  >
+                    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z" />
+                    </svg>
+                    Browse Files
+                  </button>
+                </div>
               </div>
             ) : (
               <div className="space-y-6">
