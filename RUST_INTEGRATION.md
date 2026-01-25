@@ -1,153 +1,80 @@
-# Rust Integration in Coworker
+# Rust Tools Integration
 
-This document outlines the Rust-based tools and libraries used in Coworker for maximum performance.
+Coworker uses popular, battle-tested Rust tools for maximum performance.
 
-## Overview
+## Core Tools
 
-Coworker uses a hybrid architecture:
-- **Frontend**: React 19 + TypeScript + Electron
-- **Backend**: Node.js + Rust tools (subprocess)
-- **Native Modules**: napi-rs for tight Node.js integration
+These are installed and used via subprocess:
 
-## Rust Tools (Subprocess)
+| Tool | Purpose | Why Rust? |
+|------|---------|-----------|
+| [fd](https://github.com/sharkdp/fd) | File finder | 10-50x faster than `ls` |
+| [ripgrep](https://github.com/BurntSushi/ripgrep) | Content search | Fastest grep alternative |
+| [bat](https://github.com/sharkdp/bat) | Syntax cat | Syntax highlighting, paging |
+| [eza](https://github.com/eza-community/eza) | Modern ls | Better defaults, colors |
+| [bottom](https://github.com/clementtsang/bottom) | Process monitor | Cross-platform, pretty |
 
-These tools must be installed and available in PATH:
-
-### Core Tools
-
-| Tool | Purpose | Install |
-|------|---------|---------|
-| [scout-rs](https://github.com/vikramships/scout-rs) | Fast file discovery | `cargo install --git https://github.com/vikramships/scout-rs.git` |
-| [fd](https://github.com/sharkdp/fd) | Fast file finder | `cargo install fd-find` |
-| [rg](https://github.com/BurntSushi/ripgrep) | Fast search | `cargo install ripgrep` |
-| [bat](https://github.com/sharkdp/bat) | Syntax-highlighted cat | `cargo install bat` |
-| [eza](https://github.com/eza-community/eza) | Modern ls | `cargo install eza` |
-| [bottom](https://github.com/clementtsang/bottom) | Process monitor | `cargo install bottom` |
-| [zoxide](https://github.com/ajeetdsouza/zoxide) | Smart cd | `cargo install zoxide` |
-
-### Installation Script
+## Installation
 
 ```bash
-# Install all Rust tools
-cargo install ripgrep fd-find bat eza bottom zoxide
+# Using cargo (recommended)
+cargo install fd-find ripgrep bat eza bottom
 
-# Install scout-rs from source
-cargo install --git https://github.com/vikramships/scout-rs.git
+# Or via package manager
+brew install fd ripgrep bat eza bottom  # macOS
+apt install fd-find ripgrep bat eza     # Ubuntu/Debian
 ```
 
-## Native Module (`/native`)
+## Integration
 
-Coworker includes a native Node.js module built with [napi-rs](https://napi.rs/).
+### File Tree (fd)
+```typescript
+// src/electron/libs/fd.ts
+import { execSync } from "child_process";
 
-### Current Features
-
-- **SQLite** - rusqlite with bundled SQLcipher
-- **Git Operations** - git2 for status, commit, log
-- **LSP Server** - Language server management
-
-### Building
-
-```bash
-# Install Rust if not installed
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-
-# Build native module
-cd native
-cargo build --release
-
-# The .node file will be in target/release/
-```
-
-### Architecture
-
-```
-native/
-├── Cargo.toml           # Rust dependencies
-├── src/
-│   ├── lib.rs          # Main entry point (exports functions)
-│   ├── types.rs        # napi TypeScript type definitions
-│   ├── git.rs          # Git operations
-│   └── lsp.rs          # LSP server management
-└── build.rs            # Build script
-```
-
-### Exposing Functions
-
-To expose a function to Node.js, add to `lib.rs`:
-
-```rust
-#[napi]
-pub async fn git_status(repo_path: String) -> Result<Vec<GitStatusEntry>> {
-    crate::git::git_status(repo_path).await
+export function fdList(cwd: string, options?: FdOptions): FdFileInfo[] {
+  const args = ["--type", "f", "--color", "never"];
+  const output = execSync(`fd ${args.join(" ")}`, { cwd, encoding: "utf-8" });
+  return output.split("\n").filter(Boolean).map(path => ({ path }));
 }
 ```
 
-## Performance Benefits
+### Search (ripgrep)
+```typescript
+// src/electron/libs/rg.ts
+import { execSync } from "child_process";
 
-| Operation | Node.js | Rust | Speedup |
-|-----------|---------|------|---------|
-| File tree (1000 files) | ~500ms | ~50ms | 10x |
-| Search (10MB code) | ~200ms | ~10ms | 20x |
-| Git status | ~100ms | ~5ms | 20x |
-| SQLite queries | ~50ms | ~2ms | 25x |
+export function rgSearch(cwd: string, query: string): RgMatch[] {
+  const output = execSync(`rg --json -e "${query}"`, { cwd, encoding: "utf-8" });
+  return output.split("\n").filter(Boolean).map(JSON.parse);
+}
+```
 
-## Integration Points
+## Performance
 
-### File Tree
-- Uses `scout list` for fast directory traversal
-- Caches results in SQLite
-
-### Search
-- Uses `fd` for file finding
-- Uses `rg` for content search
-- Results indexed in SQLite
-
-### Terminal
-- Spawns subprocess for commands
-- Could use Rust PTY library for better control
-
-### Git Panel
-- Uses native git2 bindings
-- Exposes: status, commit, log, branch, diff, stash
+| Operation | Node.js | Rust Tool | Speedup |
+|-----------|---------|-----------|---------|
+| `ls -la` (1000 files) | ~500ms | `fd -la` ~50ms | 10x |
+| `grep -r "foo"` | ~200ms | `rg "foo"` ~10ms | 20x |
+| `cat file.rs` | Plain text | `bat file.rs` | Colored |
 
 ## Future Improvements
 
-1. **Expose more native functions** in `lib.rs`
-2. **Add scout-rs integration** for file tree building
-3. **Build Rust PTY** for better terminal control
-4. **Add sqlx** for async database operations
-5. **Create custom LSP client** in Rust
+- **zoxide** - Smart `cd` with fuzzy matching
+- **procs** - Modern `ps`
+- **nu** - Shell with built-in Rust tools
 
-## CI/CD
+## Philosophy
 
-GitHub Actions can build native modules for all platforms:
+> Use the best tool for the job. Rust tools are battle-tested and fast. Don't reinvent the wheel.
 
-```yaml
-- name: Build native module
-  run: |
-    cd native
-    cargo build --release --target x86_64-apple-darwin
-    cargo build --release --target x86_64-unknown-linux-gnu
-    cargo build --release --target x86_64-pc-windows-msvc
-```
+We prefer:
+- ✅ Famous, well-maintained tools
+- ✅ Actively developed projects
+- ✅ Cross-platform support
+- ✅ Minimal configuration
 
-## Troubleshooting
-
-### "scout: command not found"
-Install scout-rs and ensure it's in PATH:
-```bash
-export PATH="$HOME/.cargo/bin:$PATH"
-```
-
-### Native module build fails
-Ensure Rust is installed and up to date:
-```bash
-rustup update stable
-cargo update
-```
-
-### TypeScript types not found
-Rebuild after native module:
-```bash
-cd native && cargo build --release
-```
+Avoid:
+- ❌ Niche/unmaintained tools
+- ❌ Overly complex integrations
+- ❌ Duplicate functionality

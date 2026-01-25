@@ -1,17 +1,5 @@
 import type { SDKMessage, PermissionResult } from "@anthropic-ai/claude-agent-sdk";
 
-// Scout types
-export type ScoutFileInfo = {
-  path: string;
-  size: number;
-};
-
-export type ScoutSearchResult = {
-  path: string;
-  line: number;
-  content: string;
-};
-
 export type ClaudeSettingsEnv = {
   ANTHROPIC_AUTH_TOKEN: string;
   ANTHROPIC_BASE_URL: string;
@@ -80,16 +68,11 @@ export type ServerEvent =
   | { type: "session.deleted"; payload: { sessionId: string } }
   | { type: "permission.request"; payload: { sessionId: string; toolUseId: string; toolName: string; input: unknown } }
   | { type: "runner.error"; payload: { sessionId?: string; message: string } }
-  // Scout events
-  | { type: "scout.find.result"; payload: { files: ScoutFileInfo[] } }
-  | { type: "scout.search.result"; payload: { results: ScoutSearchResult[] } }
-  | { type: "scout.list.result"; payload: { files: ScoutFileInfo[] } }
-  | { type: "scout.error"; payload: { message: string } }
-  // FD events
+  // FD events (Rust - fd utility)
   | { type: "fd.find.result"; payload: { files: FdFileInfo[] } }
   | { type: "fd.list.result"; payload: { files: FdFileInfo[] } }
   | { type: "fd.error"; payload: { message: string } }
-  // RG events
+  // RG events (Rust - ripgrep)
   | { type: "rg.search.result"; payload: { results: RgMatch[] } }
   | { type: "rg.files.result"; payload: { files: string[] } }
   | { type: "rg.error"; payload: { message: string } };
@@ -103,13 +86,9 @@ export type ClientEvent =
   | { type: "session.list" }
   | { type: "session.history"; payload: { sessionId: string } }
   | { type: "permission.response"; payload: { sessionId: string; toolUseId: string; result: PermissionResult } }
-  // Scout events
-  | { type: "scout.find"; payload: { root: string; pattern: string; limit?: number } }
-  | { type: "scout.search"; payload: { root: string; query: string; ext?: string; limit?: number } }
-  | { type: "scout.list"; payload: { root: string } }
-  // FD events
+  // FD events (Rust - fd utility)
   | { type: "fd.find"; payload: { root: string; pattern: string; options?: FdOptions } }
   | { type: "fd.list"; payload: { root: string; options?: FdOptions } }
-  // RG events
+  // RG events (Rust - ripgrep)
   | { type: "rg.search"; payload: { root: string; query: string; options?: RgOptions } }
   | { type: "rg.files"; payload: { root: string; pattern?: string; options?: { ext?: string } } };

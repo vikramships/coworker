@@ -2,7 +2,6 @@ import { BrowserWindow } from "electron";
 import type { ClientEvent, ServerEvent } from "./types.js";
 import { runClaude, type RunnerHandle } from "./libs/runner.js";
 import { SessionStore } from "./libs/session-store.js";
-import { scoutFind, scoutSearch, scoutList } from "./libs/scout.js";
 import { fdFind, fdList } from "./libs/fd.js";
 import { rgSearch, rgFiles } from "./libs/rg.js";
 import { app } from "electron";
@@ -230,63 +229,7 @@ export function handleClientEvent(event: ClientEvent) {
     return;
   }
 
-  // Scout handlers
-  if (event.type === "scout.find") {
-    try {
-      const files = scoutFind(event.payload.root, {
-        pattern: event.payload.pattern,
-        limit: event.payload.limit
-      });
-      emit({
-        type: "scout.find.result",
-        payload: { files }
-      });
-    } catch (error) {
-      emit({
-        type: "scout.error",
-        payload: { message: String(error) }
-      });
-    }
-    return;
-  }
-
-  if (event.type === "scout.search") {
-    try {
-      const results = scoutSearch(event.payload.root, {
-        query: event.payload.query,
-        ext: event.payload.ext,
-        limit: event.payload.limit
-      });
-      emit({
-        type: "scout.search.result",
-        payload: { results }
-      });
-    } catch (error) {
-      emit({
-        type: "scout.error",
-        payload: { message: String(error) }
-      });
-    }
-    return;
-  }
-
-  if (event.type === "scout.list") {
-    try {
-      const files = scoutList(event.payload.root);
-      emit({
-        type: "scout.list.result",
-        payload: { files }
-      });
-    } catch (error) {
-      emit({
-        type: "scout.error",
-        payload: { message: String(error) }
-      });
-    }
-    return;
-  }
-
-  // FD handlers
+  // File search using fd (Rust)
   if (event.type === "fd.find") {
     try {
       const options = event.payload.options || {};
