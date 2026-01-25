@@ -18,6 +18,6 @@ export function getIconPath() {
     return path.join(
         app.getAppPath(),
         isDev() ? './' : '../',
-        '/templateIcon.png'
+        '/assets/logo-icon.png'
     )
 }

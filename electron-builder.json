@@ -24,6 +24,7 @@
         "hardenedRuntime": true,
         "entitlements": "entitlements.plist",
         "entitlementsInherit": "entitlements.plist",
+        "icon": "assets/logo-icon",
         "files": [
             "**/*",
             "!**/node_modules/@anthropic-ai/claude-agent-sdk/vendor/ripgrep/*-{linux,win32}/**",
@@ -32,12 +33,14 @@
     },
     "linux": {
         "target": "AppImage",
-        "category": "Utility"
+        "category": "Utility",
+        "icon": "assets/logo-icon"
     },
     "win": {
         "target": [
             "portable",
             "msi"
-        ]
+        ],
+        "icon": "assets/logo-icon"
     }
 }

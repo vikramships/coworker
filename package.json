@@ -1,6 +1,7 @@
 {
 	"name": "coworker",
 	"author": "vikramships",
+	"description": "A modern desktop chat interface for collaborating with Claude Code",
 	"private": true,
 	"version": "0.1.0",
 	"type": "module",
