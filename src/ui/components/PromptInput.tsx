@@ -80,15 +80,16 @@ export function PromptInput({ sendEvent }: PromptInputProps) {
   // Sync initial prompt if any (e.g. from modal)
   const storePrompt = useAppStore(s => s.prompt);
   const prevStorePromptRef = useRef(storePrompt);
+  const showStartModal = useAppStore(s => s.showStartModal);
   useEffect(() => {
-    // Only sync when storePrompt changes from a non-empty value
-    if (storePrompt && storePrompt !== prevStorePromptRef.current && storePrompt !== localValue) {
+    // Only sync when storePrompt changes from a non-empty value and start modal is NOT open
+    if (!showStartModal && storePrompt && storePrompt !== prevStorePromptRef.current && storePrompt !== localValue) {
       setLocalValue(storePrompt);
       // Clear store prompt after syncing
       useAppStore.getState().setPrompt("");
     }
     prevStorePromptRef.current = storePrompt;
-  }, [storePrompt, localValue]);
+  }, [storePrompt, localValue, showStartModal]);
 
   const adjustHeight = () => {
     const textarea = promptRef.current;
@@ -163,11 +164,10 @@ export function PromptInput({ sendEvent }: PromptInputProps) {
         <div className="flex items-end gap-3 p-2 pl-4">
           {/* Image upload button */}
           <button
-            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-all duration-300 ${
-              attachments.length > 0
+            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-all duration-300 ${attachments.length > 0
                 ? "bg-accent-500/10 text-accent-500 hover:bg-accent-500 hover:text-white"
                 : "bg-surface-tertiary text-ink-400 hover:text-ink-600 hover:bg-surface-secondary"
-            }`}
+              }`}
             onClick={handleSelectImage}
             aria-label="Attach image"
             title="Attach image"
