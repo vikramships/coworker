@@ -510,7 +510,7 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
                       <input
                         type="text"
                         className="rounded-lg border border-ink-900/10 bg-surface-secondary px-3 py-2 text-sm text-ink-800 placeholder:text-muted-light focus:border-accent focus:outline-none"
-                        placeholder="claude-3-5-sonnet-20241022"
+                        placeholder="sonnet-4-20250514"
                         value={formModel}
                         onChange={(e) => setFormModel(e.target.value)}
                       />

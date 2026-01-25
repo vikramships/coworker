@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { PermissionResult } from "@anthropic-ai/claude-agent-sdk";
 import type { PermissionRequest } from "../store/useAppStore";
+import { useAppStore } from "../store/useAppStore";
 
 type AskUserQuestionInput = {
   questions?: Array<{
@@ -23,6 +24,7 @@ export function DecisionPanel({
   const questions = input?.questions ?? [];
   const [selectedOptions, setSelectedOptions] = useState<Record<number, string[]>>({});
   const [otherInputs, setOtherInputs] = useState<Record<number, string>>({});
+  const aiProfile = useAppStore(s => s.aiProfile);
 
   useEffect(() => {
     setSelectedOptions({});
@@ -69,7 +71,7 @@ export function DecisionPanel({
   if (request.toolName === "AskUserQuestion" && questions.length > 0) {
     return (
       <div className="rounded-2xl border border-accent/20 bg-accent-subtle p-5">
-        <div className="text-xs font-semibold text-accent">Question from Claude</div>
+        <div className="text-xs font-semibold text-accent">Question from {aiProfile.name || 'Assistant'}</div>
         {questions.map((q, qIndex) => (
           <div key={qIndex} className="mt-4">
             <p className="text-sm text-ink-700">{q.question}</p>

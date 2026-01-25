@@ -7,7 +7,7 @@ interface OnboardingModalProps {
 export function OnboardingModal({ onComplete }: OnboardingModalProps) {
   const [step, setStep] = useState(0);
   const [userName, setUserName] = useState("");
-  const [aiName, setAiName] = useState("Claude");
+  const [aiName, setAiName] = useState("Coworker");
   const [apiKey, setApiKey] = useState("");
   const [theme, setTheme] = useState<"light" | "dark" | "system">("system");
   const [loading, setLoading] = useState(false);
@@ -122,7 +122,7 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
                 <input
                   type="text"
                   className="rounded-xl border border-ink-900/10 bg-surface-secondary px-4 py-3 text-sm text-ink-800 focus:border-accent-500 focus:outline-none"
-                  placeholder="Claude"
+                  placeholder="Coworker"
                   value={aiName}
                   onChange={(e) => setAiName(e.target.value)}
                 />

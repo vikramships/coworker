@@ -1,8 +1,10 @@
 # 🤖 Coworker
 
-A modern, high-performance AI chat interface for collaborating with Claude Code.
+A modern, high-performance AI chat interface for collaborating with AI assistants.
 
-![Coworker UI](https://placeholder.com/coworker-screenshot.png)
+<p align="center">
+  <img src="assets/logo.svg" alt="Coworker Logo" width="128" />
+</p>
 
 ## ✨ Features
 

@@ -500,7 +500,7 @@ export function MessageCard({
             return (
               <AssistantBlockCard
                 key={idx}
-                title="Claude"
+                title="Assistant"
                 text={content.text}
                 showIndicator={isLastContent && showIndicator}
                 icon={

@@ -70,7 +70,7 @@ export function StartSessionModal({
           </button>
         </div>
 
-        <p className="text-sm text-muted mb-6">Create a new session to start working with Claude.</p>
+        <p className="text-sm text-muted mb-6">Create a new session to start working with Coworker.</p>
 
         {/* Working Directory */}
         <div className="mb-5">

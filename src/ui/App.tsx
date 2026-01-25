@@ -67,6 +67,7 @@ function App() {
     prompt: s.prompt,
     cwd: s.cwd,
     pendingStart: s.pendingStart,
+    aiProfile: s.aiProfile,
     setShowStartModal: s.setShowStartModal,
     setShowSettingsModal: s.setShowSettingsModal,
     setGlobalError: s.setGlobalError,
@@ -87,6 +88,7 @@ function App() {
     prompt,
     cwd,
     pendingStart,
+    aiProfile,
     setShowStartModal,
     setShowSettingsModal,
     setGlobalError,
@@ -375,7 +377,7 @@ function App() {
                 </div>
                 <div className="text-xl font-semibold text-ink-800 mb-2">Welcome to Coworker</div>
                 <p className="text-sm text-muted max-w-md mb-8 leading-relaxed">
-                  Start a new session to collaborate with Claude Code. Describe your task, and we'll get started building something amazing together.
+                  Start a new session to collaborate with Coworker. Describe your task, and we'll get started building something amazing together.
                 </p>
                 <div className="flex items-center gap-4">
                   <button
@@ -437,7 +439,7 @@ function App() {
                 <div className="mt-4 flex flex-col gap-2.5 px-1 animate-fade-in">
                   <div className="flex items-center gap-2">
                     <div className="h-4 w-4 rounded-full border-2 border-accent-500 border-t-transparent animate-spin" />
-                    <span className="text-sm text-ink-500 font-medium">Claude is thinking...</span>
+                    <span className="text-sm text-ink-500 font-medium">{aiProfile.name || 'Assistant'} is thinking...</span>
                   </div>
                   <div className="space-y-3">
                     <div className="h-4 w-2/5 rounded-lg bg-gradient-to-r from-ink-900/10 via-ink-900/5 to-ink-900/10 animate-shimmer" />

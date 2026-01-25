@@ -268,7 +268,7 @@ export function Sidebar({
                             <path d="M7 9h10M7 12h6" />
                             <path d="M13 15l3 2-3 2" />
                           </svg>
-                          Resume in Claude
+                          Resume session
                         </DropdownMenu.Item>
                       </DropdownMenu.Content>
                     </DropdownMenu.Portal>
@@ -312,10 +312,10 @@ export function Sidebar({
                   </button>
                 </Dialog.Close>
               </div>
-              <p className="mt-2 text-sm text-muted">Copy this command to resume the session in Claude Code:</p>
+              <p className="mt-2 text-sm text-muted">Copy this command to resume the session in Coworker:</p>
               <div className="mt-4 flex items-center gap-2 rounded-xl border border-ink-900/10 bg-surface-secondary px-3 py-2.5">
                 <code className="flex-1 font-mono text-xs text-ink-700 break-all">
-                  {resumeSessionId ? `claude --resume ${resumeSessionId}` : ""}
+                  {resumeSessionId ? `coworker --resume ${resumeSessionId}` : ""}
                 </code>
                 <button
                   className={`rounded-lg p-2 transition-all ${copied ? "text-success" : "text-ink-500 hover:bg-surface"
