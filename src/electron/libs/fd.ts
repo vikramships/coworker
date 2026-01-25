@@ -1,5 +1,8 @@
 import { execSync } from "child_process";
-import { join } from "path";
+import { join, dirname } from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export interface FdFileInfo {
   path: string;
@@ -14,12 +17,17 @@ export interface FdOptions {
 }
 
 function getBinPath(): string {
-  return join(process.resourcesPath, "bin", "fd");
+  // Look in bundled binaries first, fallback to system PATH
+  const bundledPath = join(process.resourcesPath, "bin", "fd");
+  if (require("fs").existsSync(bundledPath)) {
+    return bundledPath;
+  }
+  return "fd"; // Fallback to system PATH
 }
 
 function execFd(args: string[], cwd: string): string {
   const binPath = getBinPath();
-  const fullCommand = [binPath, ...args].map(arg => `"${arg}"`).join(" ");
+  const fullCommand = `"${binPath}" ${args.map(arg => `"${arg}"`).join(" ")}`;
   try {
     return execSync(fullCommand, {
       cwd,

@@ -6,8 +6,9 @@ A modern chat interface for collaborating with Claude Code, built with React, Ty
 
 - 💬 **Chat Interface**: Clean, modern chat UI for interacting with Claude
 - 🛠️ **Tool Integration**: Execute commands, read/write files, and run tools
+- ⚡ **High Performance**: Bundled Rust tools (fd, ripgrep, bat) for fast file operations
 - 🎨 **Theme Support**: Light and dark mode themes
-- ⚡ **Fast Development**: Built with Vite and hot reload
+- 📦 **Self-Contained**: All tools bundled - no installation required
 - 📱 **Cross-Platform**: Runs on macOS, Windows, and Linux via Electron
 
 ## Tech Stack
@@ -15,7 +16,20 @@ A modern chat interface for collaborating with Claude Code, built with React, Ty
 - **Frontend**: React 19, TypeScript, Tailwind CSS v4
 - **Backend**: Electron, Node.js
 - **AI Integration**: Claude Code via Anthropic SDK
-- **Build Tools**: Vite, ESLint
+- **Performance**: Bundled Rust tools (fd, ripgrep, bat)
+- **Build Tools**: Vite, Electron Builder
+
+## Bundled Tools
+
+Coworker includes high-performance Rust tools out of the box:
+
+| Tool | Purpose |
+|------|---------|
+| fd | Fast file finding (10-50x faster than ls) |
+| ripgrep | Blazing fast search |
+| bat | Syntax-highlighted file viewing |
+
+**No installation required!** All tools are bundled with the app.
 
 ## Getting Started
 

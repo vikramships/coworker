@@ -1,5 +1,6 @@
 import { execSync } from "child_process";
 import { join } from "path";
+import { existsSync } from "fs";
 
 export interface RgMatch {
   path: string;
@@ -16,7 +17,12 @@ export interface RgOptions {
 }
 
 function getBinPath(): string {
-  return join(process.resourcesPath, "bin", "rg");
+  // Look in bundled binaries first, fallback to system PATH
+  const bundledPath = join(process.resourcesPath, "bin", "rg");
+  if (existsSync(bundledPath)) {
+    return bundledPath;
+  }
+  return "rg"; // Fallback to system PATH
 }
 
 interface RgJsonMatch {
@@ -30,7 +36,7 @@ interface RgJsonMatch {
 
 function execRg(args: string[], cwd: string): string {
   const binPath = getBinPath();
-  const fullCommand = [binPath, ...args].map(arg => `"${arg}"`).join(" ");
+  const fullCommand = `"${binPath}" ${args.map(arg => `"${arg}"`).join(" ")}`;
   try {
     return execSync(fullCommand, {
       cwd,
