@@ -46,15 +46,22 @@ pub async fn get_file_size(path: String) -> Result<u64, String> {
 // Simple file listing (Rust-based, no subprocess)
 #[napi]
 pub async fn list_directory(path: String) -> Result<Vec<String>, String> {
-    std::fs::read_dir(path)
-        .map_err(|e| e.to_string())?
-        .filter_map(|entry| entry.ok())
-        .map(|entry| entry.file_name().to_string_lossy().to_string())
-        .collect::<Vec<_>>()
-        .into_iter()
-        .filter(|name| !name.starts_with('.'))
-        .collect::<Result<Vec<String>, _>>()
-        .map_err(|e| e.to_string())
+    match std::fs::read_dir(path) {
+        Ok(entries) => {
+            Ok(entries
+                .filter_map(|entry| entry.ok())
+                .map(|entry| entry.file_name().to_string_lossy().to_string())
+                .collect::<Vec<_>>()
+                .into_iter()
+                .filter(|name| !name.starts_with('.'))
+                .collect())
+        }
+        Err(e) if e.kind() == std::io::ErrorKind::PermissionDenied => {
+            // Return empty list for permission errors
+            Ok(Vec::new())
+        }
+        Err(e) => Err(e.to_string())
+    }
 }
 
 // Git operations

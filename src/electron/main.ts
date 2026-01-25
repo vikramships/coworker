@@ -362,19 +362,26 @@ app.on("ready", () => {
 
     ipcMainHandle("list-files", async (_: IpcMainInvokeEvent, dirPath: string) => {
         try {
-            const items = readdirSync(dirPath, { withFileTypes: true }).map(dirent => ({
-                name: dirent.name,
-                path: join(dirPath, dirent.name),
-                isDirectory: dirent.isDirectory(),
-                isFile: dirent.isFile()
-            })).sort((a, b) => {
-                if (a.isDirectory === b.isDirectory) {
-                    return a.name.localeCompare(b.name);
-                }
-                return a.isDirectory ? -1 : 1;
-            });
+            const items = readdirSync(dirPath, { withFileTypes: true })
+                .filter(dirent => !dirent.name.startsWith('.')) // Skip hidden files
+                .map(dirent => ({
+                    name: dirent.name,
+                    path: join(dirPath, dirent.name),
+                    isDirectory: dirent.isDirectory(),
+                    isFile: dirent.isFile()
+                }))
+                .sort((a, b) => {
+                    if (a.isDirectory === b.isDirectory) {
+                        return a.name.localeCompare(b.name);
+                    }
+                    return a.isDirectory ? -1 : 1;
+                });
             return { success: true, items };
-        } catch (error) {
+        } catch (error: any) {
+            // Return empty list for permission errors instead of logging error
+            if (error.code === 'EACCES' || error.code === 'EPERM') {
+                return { success: true, items: [] };
+            }
             console.error("[main] Failed to list files:", error);
             return { success: false, error: String(error) };
         }
