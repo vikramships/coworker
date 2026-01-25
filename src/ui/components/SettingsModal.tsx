@@ -334,20 +334,6 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
                   />
                 </label>
 
-                {/* Terminal Shell */}
-                <label className="grid gap-1.5">
-                  <span className="text-xs text-muted">Terminal Shell</span>
-                  <select
-                    className="rounded-lg border border-ink-900/10 bg-surface-secondary px-3 py-2 text-sm text-ink-800 focus:border-accent-500 focus:outline-none"
-                    defaultValue="bash"
-                  >
-                    <option value="bash">Bash</option>
-                    <option value="zsh">Zsh</option>
-                    <option value="fish">Fish</option>
-                    <option value="/bin/sh">Sh</option>
-                  </select>
-                </label>
-
                 {/* Auto-save conversations */}
                 <div className="flex items-center justify-between py-1">
                   <div className="grid gap-0.5">

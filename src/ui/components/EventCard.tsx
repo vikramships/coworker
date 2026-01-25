@@ -230,7 +230,7 @@ const ToolResult = ({ messageContent }: { messageContent: ToolResultContent }) =
   return (
     <div className="flex flex-col mt-4">
       <div className="flex items-center gap-2 mb-2 px-1">
-        <span className="text-[11px] font-bold text-ink-500 uppercase tracking-wider">Terminal Output</span>
+        <span className="text-[11px] font-bold text-ink-500 uppercase tracking-wider">Output</span>
         <StatusBadge status={status} />
       </div>
       <div className={`rounded-lg overflow-hidden border transition-all duration-300 ${isError

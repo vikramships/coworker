@@ -13,7 +13,6 @@ import { PromptInput, usePromptActions } from "./components/PromptInput";
 import { MessageCard } from "./components/EventCard";
 import { ToastContainer } from "./components/Toast";
 import { FileTree } from "./components/FileTree";
-import { Terminal } from "./components/Terminal";
 import MDContent from "./render/markdown";
 
 function App() {
@@ -26,7 +25,6 @@ function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true); // Default to collapsed
   const [rightPanelOpen, setRightPanelOpen] = useState(false);
-  const [rightPanelTab, setRightPanelTab] = useState<'files' | 'terminal'>('files');
   const [defaultCwd, setDefaultCwd] = useState<string>('~');
 
   // Get home directory on mount
@@ -216,7 +214,7 @@ function App() {
         />
       )}
 
-      {/* Right Panel - File Explorer & Terminal */}
+      {/* Right Panel - File Explorer */}
       <ResizablePanel
         defaultWidth={320}
         minWidth={280}
@@ -225,41 +223,18 @@ function App() {
         className={`border-l border-ink-900/10 bg-surface-secondary/30 ${rightPanelOpen ? '' : 'hidden'}`}
       >
         <div className="flex flex-col h-full">
-          {/* Right Panel Tabs */}
-          <div className="flex items-center border-b border-ink-900/10 px-2">
-            <button
-              className={`px-4 py-3 text-sm font-medium transition-colors border-b-2 ${
-                rightPanelTab === 'files'
-                  ? "text-accent-600 border-accent-500"
-                  : "text-muted hover:text-ink-600 border-transparent"
-              }`}
-              onClick={() => setRightPanelTab('files')}
-            >
+          {/* Right Panel Header */}
+          <div className="flex items-center justify-between border-b border-ink-900/10 px-2 py-3">
+            <span className="px-4 text-sm font-medium text-ink-700">
               <span className="flex items-center gap-2">
                 <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z" />
                 </svg>
                 Files
               </span>
-            </button>
+            </span>
             <button
-              className={`px-4 py-3 text-sm font-medium transition-colors border-b-2 ${
-                rightPanelTab === 'terminal'
-                  ? "text-accent-600 border-accent-500"
-                  : "text-muted hover:text-ink-600 border-transparent"
-              }`}
-              onClick={() => setRightPanelTab('terminal')}
-            >
-              <span className="flex items-center gap-2">
-                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <polyline points="4 17 10 11 4 5" />
-                  <line x1="12" y1="19" x2="20" y2="19" />
-                </svg>
-                Terminal
-              </span>
-            </button>
-            <button
-              className="ml-auto p-2 text-muted hover:text-ink-600 hover:bg-surface-secondary rounded-lg transition-colors"
+              className="p-2 text-muted hover:text-ink-600 hover:bg-surface-secondary rounded-lg transition-colors"
               onClick={() => setRightPanelOpen(false)}
               aria-label="Close panel"
             >
@@ -271,15 +246,9 @@ function App() {
 
           {/* Panel Content */}
           <div className="flex-1 overflow-hidden">
-            {rightPanelTab === 'files' ? (
-              <div className="h-full overflow-y-auto">
-                <FileTree rootPath={cwd || defaultCwd} onFileSelect={(path) => console.log('File selected:', path)} />
-              </div>
-            ) : (
-              <div className="h-full">
-                <Terminal cwd={cwd || defaultCwd} className="h-full" onCommand={(cmd) => console.log('Command:', cmd)} />
-              </div>
-            )}
+            <div className="h-full overflow-y-auto">
+              <FileTree rootPath={cwd || defaultCwd} onFileSelect={(path) => console.log('File selected:', path)} />
+            </div>
           </div>
         </div>
       </ResizablePanel>
@@ -325,45 +294,15 @@ function App() {
             {/* Toggle Files Panel */}
             <button
               className={`p-2 rounded-lg transition-all duration-200 ${
-                rightPanelOpen && rightPanelTab === 'files'
+                rightPanelOpen
                   ? "text-accent-600 bg-accent-50 shadow-sm"
                   : "text-ink-500 hover:text-ink-700 hover:bg-surface-secondary hover:shadow-sm"
               }`}
               title="Toggle File Explorer"
-              onClick={() => {
-                if (rightPanelOpen && rightPanelTab === 'files') {
-                  setRightPanelOpen(false);
-                } else {
-                  setRightPanelOpen(true);
-                  setRightPanelTab('files');
-                }
-              }}
+              onClick={() => setRightPanelOpen(!rightPanelOpen)}
             >
               <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z" />
-              </svg>
-            </button>
-
-            {/* Toggle Terminal Panel */}
-            <button
-              className={`p-2 rounded-lg transition-all duration-200 ${
-                rightPanelOpen && rightPanelTab === 'terminal'
-                  ? "text-accent-600 bg-accent-50 shadow-sm"
-                  : "text-ink-500 hover:text-ink-700 hover:bg-surface-secondary hover:shadow-sm"
-              }`}
-              title="Toggle Terminal"
-              onClick={() => {
-                if (rightPanelOpen && rightPanelTab === 'terminal') {
-                  setRightPanelOpen(false);
-                } else {
-                  setRightPanelOpen(true);
-                  setRightPanelTab('terminal');
-                }
-              }}
-            >
-              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polyline points="4 17 10 11 4 5" />
-                <line x1="12" y1="19" x2="20" y2="19" />
               </svg>
             </button>
 
@@ -411,7 +350,7 @@ function App() {
                     Start New Session
                   </button>
                   <button
-                    onClick={() => { setRightPanelOpen(true); setRightPanelTab('files'); }}
+                    onClick={() => setRightPanelOpen(true)}
                     className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-ink-900/10 bg-surface hover:bg-surface-secondary text-ink-700 text-sm font-medium transition-colors"
                   >
                     <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

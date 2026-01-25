@@ -25,10 +25,7 @@ export default defineConfig(({ mode }) => {
 						if (id.includes('react-markdown') || id.includes('remark-gfm')) {
 							return 'markdown';
 						}
-						// Split heavy UI components
-						if (id.includes('xterm')) {
-							return 'terminal-vendor';
-						}
+						// Split state management
 						if (id.includes('zustand')) {
 							return 'state-vendor';
 						}

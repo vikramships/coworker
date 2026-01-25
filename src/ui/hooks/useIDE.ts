@@ -11,7 +11,6 @@ export function useIDE() {
 
   const [activeTabId, setActiveTabId] = useState<string | null>(null);
   const [showFileExplorer, setShowFileExplorer] = useState(true);
-  const [showTerminal, setShowTerminal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
   const addTab = useCallback((tab: {
@@ -59,31 +58,11 @@ export function useIDE() {
     setShowFileExplorer(prev => !prev);
   }, []);
 
-  const toggleTerminal = useCallback(() => {
-    setShowTerminal(prev => !prev);
-  }, []);
-
-  const createNewTerminalTab = useCallback(() => {
-    const newTabId = Date.now().toString();
-    setActiveTabId(newTabId);
-    setEditorTabs(prev => [
-      ...prev,
-      {
-        id: newTabId,
-        title: `Terminal ${prev.filter(t => t.id.startsWith('Terminal')).length + 1}`,
-        content: `New terminal tab created`,
-        language: 'bash',
-        isDirty: false,
-      }
-    ]);
-  }, [editorTabs]);
-
   return {
     state: {
       editorTabs,
       activeTabId,
       showFileExplorer,
-      showTerminal,
       searchQuery,
     },
     actions: {
@@ -93,8 +72,6 @@ export function useIDE() {
       updateTabContent,
       markTabSaved,
       toggleFileExplorer,
-      toggleTerminal,
-      createNewTerminalTab,
       setSearchQuery,
       setEditorTabs,
     },
