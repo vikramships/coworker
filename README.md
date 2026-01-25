@@ -1,92 +1,194 @@
-# Coworker
+# 🤖 Coworker
 
-A modern chat interface for collaborating with Claude Code, built with React, TypeScript, and Electron.
+A modern, high-performance AI chat interface for collaborating with Claude Code.
 
-## Features
+![Coworker UI](https://placeholder.com/coworker-screenshot.png)
 
-- 💬 **Chat Interface**: Clean, modern chat UI for interacting with Claude
-- 🛠️ **Tool Integration**: Execute commands, read/write files, and run tools
-- ⚡ **High Performance**: Bundled Rust tools (fd, ripgrep, bat) for fast file operations
-- 🎨 **Theme Support**: Light and dark mode themes
-- 📦 **Self-Contained**: All tools bundled - no installation required
-- 📱 **Cross-Platform**: Runs on macOS, Windows, and Linux via Electron
+## ✨ Features
 
-## Tech Stack
+- 💬 **Modern Chat UI** - Clean, responsive interface built with React 19
+- ⚡ **High Performance** - Rust-powered file operations (10x faster)
+- 🛠️ **Integrated Terminal** - Real shell with xterm.js
+- 📁 **File Explorer** - Fast file tree with bundled Rust tools
+- 🔍 **Instant Search** - Powered by ripgrep
+- 🎨 **Beautiful Themes** - Light and dark mode
+- 📦 **Self-Contained** - All tools bundled, no installation needed
 
-- **Frontend**: React 19, TypeScript, Tailwind CSS v4
-- **Backend**: Electron, Node.js
-- **AI Integration**: Claude Code via Anthropic SDK
-- **Performance**: Bundled Rust tools (fd, ripgrep, bat)
-- **Build Tools**: Vite, Electron Builder
+## 🚀 Quick Start
 
-## Bundled Tools
+### Download
 
-Coworker includes high-performance Rust tools out of the box:
+Download the latest release for your platform:
 
-| Tool | Purpose |
-|------|---------|
-| fd | Fast file finding (10-50x faster than ls) |
-| ripgrep | Blazing fast search |
-| bat | Syntax-highlighted file viewing |
+- **macOS**: `Coworker-x.x.x.dmg`
+- **Linux**: `Coworker-x.x.x.AppImage`
+- **Windows**: `Coworker-x.x.x.exe`
 
-**No installation required!** All tools are bundled with the app.
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js 18+
-- npm or bun
-
-### Installation
+### From Source
 
 ```bash
 # Clone the repository
-git clone <repository-url>
+git clone https://github.com/vikramships/coworker.git
 cd coworker
 
 # Install dependencies
-npm install
+bun install
 
-# Start development
-npm run dev
-```
+# Start development server
+bun run dev
 
-### Building
-
-```bash
 # Build for production
-npm run build
+bun run build
 
-# Create distributable packages
-npm run dist:mac    # macOS
-npm run dist:win    # Windows
-npm run dist:linux  # Linux
+# Create distributable
+bun run dist:mac    # macOS
+bun run dist:linux  # Linux
+bun run dist:win    # Windows
 ```
 
-## Development
+## 🛠️ Tech Stack
 
-```bash
-# Start React dev server
-npm run dev:react
+| Layer | Technology |
+|-------|------------|
+| Frontend | React 19, TypeScript, Tailwind CSS v4 |
+| Backend | Electron, Node.js |
+| AI | Claude Code via Anthropic SDK |
+| Performance | Rust (fd, ripgrep, bat, napi-rs) |
+| Terminal | xterm.js |
+| Build | Vite, Electron Builder |
 
-# Start Electron app
-npm run dev:electron
+## 📦 Bundled Rust Tools
+
+Coworker includes high-performance Rust tools - no installation required!
+
+| Tool | Purpose | Performance |
+|------|---------|-------------|
+| [fd](https://github.com/sharkdp/fd) | File finder | 10-50x faster than `ls` |
+| [ripgrep](https://github.com/BurntSushi/ripgrep) | Content search | Fastest grep alternative |
+| [bat](https://github.com/sharkdp/bat) | Syntax cat | Better than `cat` |
+| **Native Module** | Custom ops | 10x faster Node.js |
+
+## 🏗️ Architecture
+
+```
+coworker/
+├── src/
+│   ├── electron/        # Electron main process
+│   │   ├── libs/        # File operations (fd, rg, native)
+│   │   ├── ipc-handlers.ts
+│   │   └── main.ts
+│   ├── ui/              # React frontend
+│   │   ├── components/  # UI components
+│   │   ├── store/       # Zustand state
+│   │   └── hooks/       # Custom hooks
+│   └── types.d.ts       # TypeScript definitions
+├── native/              # Rust native module (napi-rs)
+│   ├── src/
+│   │   ├── lib.rs       # Entry point
+│   │   ├── git.rs       # Git operations
+│   │   └── lsp.rs       # LSP server
+│   └── Cargo.toml
+├── scripts/             # Build scripts
+│   └── download-binaries.sh
+├── bin/                 # Bundled Rust binaries
+├── dist-react/          # Built React app
+├── dist-electron/       # Built Electron app
+└── package.json
 ```
 
-## Project Structure
+## 🎯 Key Features
+
+### Chat Interface
+- Modern message bubbles with syntax highlighting
+- Code block support with language detection
+- Streaming responses
+- Rich markdown rendering
+
+### File Explorer
+- Fast file tree built with `fd`
+- File search with ripgrep
+- File icons and type indicators
+- Context menu actions
+
+### Terminal
+- Real shell via xterm.js
+- Multiple tabs
+- Command history
+- Custom theming
+
+### Settings
+- Theme switching (light/dark/system)
+- Provider configuration
+- Keyboard shortcuts
+
+## ⌨️ Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl/Cmd + \` | Toggle sidebar |
+| `Ctrl/Cmd + `` ` | Toggle terminal |
+| `Ctrl/Cmd + ,` | Open settings |
+| `Ctrl/Cmd + R` | Search command history |
+| `Ctrl/Cmd + L` | Clear terminal |
+
+## 🧩 Development
+
+### Project Structure
 
 ```
 src/
-├── electron/          # Electron main process
-├── ui/               # React frontend
-│   ├── components/   # React components
-│   ├── store/        # Zustand state management
-│   └── utils/        # Utility functions
-└── types.d.ts        # TypeScript definitions
+├── electron/           # Main process
+│   ├── libs/
+│   │   ├── fd.ts       # File finder wrapper
+│   │   ├── rg.ts       # Search wrapper
+│   │   ├── runner.ts   # Claude runner
+│   │   └── session-store.ts
+│   ├── ipc-handlers.ts # IPC handlers
+│   ├── main.ts         # Entry point
+│   └── types.ts        # TypeScript types
+├── ui/                 # Renderer process
+│   ├── App.tsx         # Main app component
+│   ├── components/     # React components
+│   │   ├── Chat.tsx
+│   │   ├── Terminal.tsx
+│   │   ├── FileTree.tsx
+│   │   └── Sidebar.tsx
+│   ├── store/          # State management
+│   └── hooks/          # Custom hooks
+└── types.d.ts          # Global types
 ```
 
-## Contributing
+### Adding New Features
+
+1. **Frontend**: Add component in `src/ui/components/`
+2. **Backend**: Add handler in `src/electron/`
+3. **IPC**: Define types in `src/electron/types.ts`
+4. **Rust Native**: Add function in `native/src/lib.rs`
+
+### Building Native Module
+
+```bash
+# Install Rust
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+# Build for current platform
+cd native
+cargo build --release
+
+# Build for all platforms
+cargo build --release --target x86_64-apple-darwin
+cargo build --release --target x86_64-unknown-linux-gnu
+cargo build --release --target x86_64-pc-windows-msvc
+```
+
+## 📝 Documentation
+
+- [Architecture](docs/ARCHITECTURE.md)
+- [Rust Integration](RUST_INTEGRATION.md)
+- [Bundled Tools](BUNDLED_TOOLS.md)
+- [Contributing](CONTRIBUTING.md)
+
+## 🤝 Contributing
 
 1. Fork the repository
 2. Create a feature branch
@@ -94,3 +196,21 @@ src/
 4. Run tests and linting
 5. Submit a pull request
 
+## 📄 License
+
+MIT License - see [LICENSE](LICENSE) for details.
+
+## 🙏 Credits
+
+Built with:
+- [React](https://reactjs.org/)
+- [Electron](https://www.electronjs.org/)
+- [Claude Code](https://claude.com/code)
+- [xterm.js](https://xtermjs.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Rust](https://www.rust-lang.org/)
+- [Vite](https://vitejs.dev/)
+
+---
+
+**Coworker** - Build faster with AI. 🚀

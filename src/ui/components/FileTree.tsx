@@ -214,6 +214,7 @@ function FileTreeItem({
 export function FileTree({ rootPath, onFileSelect, onFileContextMenu }: FileTreeProps) {
   const [fileTree, setFileTree] = useState<FileItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<FilterType>('all');
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
@@ -222,39 +223,43 @@ export function FileTree({ rootPath, onFileSelect, onFileContextMenu }: FileTree
 
   const loadFileTree = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const result = await window.electron.listFiles(rootPath);
       if (result.success && result.items) {
         const buildTree = async (items: Array<{ name: string; path: string; isDirectory: boolean; isFile: boolean }>, depth = 0): Promise<FileItem[]> => {
           if (depth > 3) return [];
-          
+
           const fileItems: FileItem[] = [];
           for (const item of items) {
             if (item.name.startsWith('.')) continue;
-            
+
             const fileItem: FileItem = {
               name: item.name,
               path: item.path,
               type: item.isDirectory ? 'directory' : 'file',
               isFavorite: favorites.has(item.path)
             };
-            
+
             if (item.isDirectory) {
               const subResult = await window.electron.listFiles(item.path);
               if (subResult.success && subResult.items) {
                 fileItem.children = await buildTree(subResult.items, depth + 1);
               }
             }
-            
+
             fileItems.push(fileItem);
           }
           return fileItems;
         };
-        
+
         const tree = await buildTree(result.items);
         setFileTree(tree);
+      } else {
+        setError(result.error || 'Failed to load files');
       }
     } catch (error) {
+      setError('Failed to load file tree');
       console.error('Failed to load file tree:', error);
     } finally {
       setLoading(false);
@@ -413,11 +418,34 @@ export function FileTree({ rootPath, onFileSelect, onFileContextMenu }: FileTree
 
       {/* File tree */}
       <div className="flex-1 overflow-y-auto">
-        {filteredTree.length === 0 ? (
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-12">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-4 h-4 rounded-full bg-accent-500 animate-bounce" style={{ animationDelay: '0ms' }} />
+              <div className="w-4 h-4 rounded-full bg-accent-500 animate-bounce" style={{ animationDelay: '150ms' }} />
+              <div className="w-4 h-4 rounded-full bg-accent-500 animate-bounce" style={{ animationDelay: '300ms' }} />
+            </div>
+            <p className="text-sm text-muted">Loading files...</p>
+          </div>
+        ) : error ? (
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <svg className="h-12 w-12 text-error/50 mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            <p className="text-sm text-error mb-2">{error}</p>
+            <button
+              onClick={loadFileTree}
+              className="px-3 py-1.5 text-xs bg-surface-secondary hover:bg-surface-secondary/80 rounded transition-colors"
+            >
+              Try again
+            </button>
+          </div>
+        ) : filteredTree.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <svg className="h-16 w-16 text-muted-light mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z" />
             </svg>
             <p className="text-sm text-muted">
               {searchQuery ? 'No files found' : 'This directory is empty'}
