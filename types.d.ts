@@ -55,6 +55,14 @@ type EventPayloadMapping = {
     "list-files": { success: boolean; items?: Array<{ name: string; path: string; isDirectory: boolean; isFile: boolean }>; error?: string };
     "get-file-stats": { success: boolean; stats?: { size: number; isDirectory: boolean; isFile: boolean; mtime: number }; error?: string };
     "open-config-file": void;
+    // Native fast operations (Rust-based)
+    "native-read-file": { success: boolean; content?: string; error?: string };
+    "native-write-file": { success: boolean; error?: string };
+    "native-list-dir": { success: boolean; entries?: string[]; error?: string };
+    "native-file-exists": boolean;
+    "native-search-files": string[];
+    "native-get-platform": string;
+    "native-get-arch": string;
 }
 
 interface Window {
@@ -89,5 +97,13 @@ interface Window {
         listFiles: (dirPath: string) => Promise<{ success: boolean; items?: Array<{ name: string; path: string; isDirectory: boolean; isFile: boolean }>; error?: string }>;
         getFileStats: (filePath: string) => Promise<{ success: boolean; stats?: { size: number; isDirectory: boolean; isFile: boolean; mtime: number }; error?: string }>;
         openConfigFile: () => Promise<void>;
+        // Native fast operations (Rust-based, no subprocess)
+        nativeReadFile: (path: string) => Promise<{ success: boolean; content?: string; error?: string }>;
+        nativeWriteFile: (path: string, content: string) => Promise<{ success: boolean; error?: string }>;
+        nativeListDir: (path: string) => Promise<{ success: boolean; entries?: string[]; error?: string }>;
+        nativeFileExists: (path: string) => Promise<boolean>;
+        nativeSearchFiles: (root: string, pattern: string, maxDepth?: number) => Promise<string[]>;
+        nativeGetPlatform: () => Promise<string>;
+        nativeGetArch: () => Promise<string>;
     }
 }

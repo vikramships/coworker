@@ -7,8 +7,8 @@ import { generateSessionTitle } from "./libs/util.js";
 import type { ClientEvent } from "./types.js";
 import { loadApiConfig, saveApiConfig, type Theme, type ProviderConfig, type AppConfig } from "./libs/config-store.js";
 import { shell } from "electron";
-import { join, homedir } from "path";
-import { writeFileSync, existsSync, mkdirSync, readdirSync, statSync } from "fs";
+import { join, dirname, homedir } from "path";
+import { writeFileSync, existsSync, mkdirSync, readdirSync, statSync, readdir as readdirSync } from "fs";
 import { readFile as readFilePromise, writeFile as writeFilePromise } from "fs/promises";
 import "./libs/claude-settings.js";
 
@@ -377,6 +377,50 @@ app.on("ready", () => {
             console.error("[main] Failed to open config file:", error);
             throw new Error("Failed to open config file");
         }
+    });
+
+    // Native module function handlers (fast Rust-based operations)
+    ipcMainHandle("native-read-file", async (_: IpcMainInvokeEvent, path: string) => {
+        try {
+            const content = await readFilePromise(path);
+            return { success: true, content };
+        } catch (error: any) {
+            return { success: false, error: error.message };
+        }
+    });
+
+    ipcMainHandle("native-write-file", async (_: IpcMainInvokeEvent, path: string, content: string) => {
+        try {
+            const dir = dirname(path);
+            if (!existsSync(dir)) {
+                mkdirSync(dir, { recursive: true });
+            }
+            await writeFilePromise(path, content);
+            return { success: true };
+        } catch (error: any) {
+            return { success: false, error: error.message };
+        }
+    });
+
+    ipcMainHandle("native-list-dir", async (_: IpcMainInvokeEvent, path: string) => {
+        try {
+            const entries = await readdir(path);
+            return { success: true, entries: entries.filter((n: string) => !n.startsWith('.')) };
+        } catch (error: any) {
+            return { success: false, error: error.message };
+        }
+    });
+
+    ipcMainHandle("native-file-exists", (_: IpcMainInvokeEvent, path: string) => {
+        return existsSync(path);
+    });
+
+    ipcMainHandle("native-get-platform", () => {
+        return std::env::consts::OS.to_string();
+    });
+
+    ipcMainHandle("native-get-arch", () => {
+        return std::env::consts::ARCH.to_string();
     });
 
     // Listen to system theme changes

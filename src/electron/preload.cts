@@ -129,7 +129,23 @@ electron.contextBridge.exposeInMainWorld("electron", {
         ipcInvoke("get-file-stats", filePath),
 
     openConfigFile: () =>
-        ipcInvoke("open-config-file")
+        ipcInvoke("open-config-file"),
+
+    // Native module functions (loaded dynamically)
+    nativeReadFile: (path: string) =>
+        ipcInvoke("native-read-file", path),
+    nativeWriteFile: (path: string, content: string) =>
+        ipcInvoke("native-write-file", path, content),
+    nativeListDir: (path: string) =>
+        ipcInvoke("native-list-dir", path),
+    nativeFileExists: (path: string) =>
+        ipcInvoke("native-file-exists", path),
+    nativeSearchFiles: (root: string, pattern: string, maxDepth?: number) =>
+        ipcInvoke("native-search-files", { root, pattern, maxDepth }),
+    nativeGetPlatform: () =>
+        ipcInvoke("native-get-platform"),
+    nativeGetArch: () =>
+        ipcInvoke("native-get-arch"),
 } satisfies Window['electron'])
 
 function ipcInvoke<Key extends keyof EventPayloadMapping>(key: Key, ...args: any[]): Promise<EventPayloadMapping[Key]> {
