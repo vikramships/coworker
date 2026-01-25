@@ -65,6 +65,22 @@ app.on("ready", () => {
         return result.filePaths[0];
     });
 
+    // Handle image selection for attachments
+    ipcMainHandle("select-image", async () => {
+        const result = await dialog.showOpenDialog(mainWindow, {
+            properties: ['openFile'],
+            filters: [
+                { name: 'Images', extensions: ['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'] }
+            ]
+        });
+
+        if (result.canceled) {
+            return null;
+        }
+
+        return result.filePaths[0];
+    });
+
 
 
     // Handle full AppConfig (multi-provider)

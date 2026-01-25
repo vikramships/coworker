@@ -85,6 +85,8 @@ electron.contextBridge.exposeInMainWorld("electron", {
         ipcInvoke("get-recent-cwds", limit),
     selectDirectory: () =>
         ipcInvoke("select-directory"),
+    selectImage: () =>
+        ipcInvoke("select-image"),
     // Full AppConfig APIs (multi-provider)
     getAppConfig: () =>
         ipcInvoke("get-app-config"),

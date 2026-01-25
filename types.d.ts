@@ -35,6 +35,7 @@ type EventPayloadMapping = {
     "generate-session-title": string;
     "get-recent-cwds": string[];
     "select-directory": string | null;
+    "select-image": string | null;
 
     // Multi-provider APIs
     "get-app-config": AppConfig | null;
@@ -64,6 +65,7 @@ interface Window {
         generateSessionTitle: (userInput: string | null) => Promise<string>;
         getRecentCwds: (limit?: number) => Promise<string[]>;
         selectDirectory: () => Promise<string | null>;
+        selectImage: () => Promise<string | null>;
 
         // Multi-provider APIs
         getAppConfig: () => Promise<AppConfig | null>;

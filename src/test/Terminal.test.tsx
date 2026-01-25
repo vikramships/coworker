@@ -42,7 +42,6 @@ describe('Terminal', () => {
 
     expect(mockOnCommand).toHaveBeenCalledWith('pwd')
   })
-  })
 
   it('executes ls command', async () => {
     render(<Terminal cwd="/home/user" onCommand={mockOnCommand} />)
@@ -156,3 +155,4 @@ describe('Terminal', () => {
 
     expect(container.firstChild).toHaveClass('custom-terminal')
   })
+})
