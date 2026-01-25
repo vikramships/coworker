@@ -87,7 +87,7 @@ export function Sidebar({
 
   const handleCopyCommand = async () => {
     if (!resumeSessionId) return;
-    const command = `claude --resume ${resumeSessionId}`;
+    const command = `coworker --resume ${resumeSessionId}`;
     try {
       await navigator.clipboard.writeText(command);
     } catch {
@@ -117,7 +117,7 @@ export function Sidebar({
         />
       )}
 
-      <aside className="lg:fixed fixed lg:top-0 top-12 inset-y-0 left-0 flex h-screen lg:h-full w-[260px] flex-col border-r border-ink-900/10 glass-morphism z-50">
+      <aside className="lg:fixed fixed lg:top-0 top-12 inset-y-0 left-0 flex h-screen lg:h-full w-[260px] flex-col border-r border-ink-900/10 glass-morphism z-40">
         {/* Drag handle area */}
         <div
           className="absolute top-0 left-0 right-0 h-12 lg:hidden"
