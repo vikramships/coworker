@@ -9,6 +9,7 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
   const [userName, setUserName] = useState("");
   const [aiName, setAiName] = useState("Coworker");
   const [apiKey, setApiKey] = useState("");
+  const [baseURL, setBaseURL] = useState("https://api.anthropic.com/v1");
   const [theme, setTheme] = useState<"light" | "dark" | "system">("system");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -17,7 +18,7 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
     { title: "Welcome to Coworker", description: "Let's set up your AI coding assistant" },
     { title: "Your Identity", description: "Who are you working with?" },
     { title: "AI Settings", description: "Configure your AI assistant" },
-    { title: "API Configuration", description: "Connect to Anthropic API" },
+    { title: "API Configuration", description: "Connect to your API provider" },
     { title: "Theme", description: "Choose your look" },
   ];
 
@@ -133,11 +134,56 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
 
           {step === 3 && (
             <div className="grid gap-4">
-              <div className="p-4 rounded-xl bg-accent/5 border border-accent/20">
-                <p className="text-sm text-ink-700">
-                  You'll need an <a href="https://console.anthropic.com" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">Anthropic API key</a> to use Coworker.
-                </p>
+              <p className="text-sm text-ink-700">
+                Connect to any Claude-compatible API endpoint. Popular options include:
+              </p>
+              
+              {/* Provider presets */}
+              <div className="grid gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setApiKey("");
+                  }}
+                  className="flex items-center gap-3 p-3 rounded-xl border border-ink-900/10 hover:bg-surface-secondary transition-colors text-left"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-orange-500 flex items-center justify-center text-white font-bold text-xs">
+                    A
+                  </div>
+                  <div>
+                    <div className="text-sm font-medium text-ink-700">Anthropic</div>
+                    <div className="text-xs text-muted">api.anthropic.com</div>
+                  </div>
+                </button>
+                
+                <button
+                  type="button"
+                  onClick={() => {
+                    // Would need to set custom base URL
+                  }}
+                  className="flex items-center gap-3 p-3 rounded-xl border border-ink-900/10 hover:bg-surface-secondary transition-colors text-left opacity-60"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center text-white font-bold text-xs">
+                    Z
+                  </div>
+                  <div>
+                    <div className="text-sm font-medium text-ink-700">Z-AI / MiniMax</div>
+                    <div className="text-xs text-muted">Custom Claude endpoints</div>
+                  </div>
+                </button>
               </div>
+
+              <label className="grid gap-2">
+                <span className="text-sm font-medium text-ink-700">API Endpoint</span>
+                <input
+                  type="url"
+                  className="rounded-xl border border-ink-900/10 bg-surface-secondary px-4 py-3 text-sm text-ink-800 focus:border-accent-500 focus:outline-none"
+                  placeholder="https://api.anthropic.com/v1"
+                  value={baseURL}
+                  onChange={(e) => setBaseURL(e.target.value)}
+                />
+              </label>
+
               <label className="grid gap-2">
                 <span className="text-sm font-medium text-ink-700">API Key</span>
                 <input
@@ -148,6 +194,7 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
                   onChange={(e) => setApiKey(e.target.value)}
                 />
               </label>
+              
               {error && (
                 <p className="text-sm text-error">{error}</p>
               )}
