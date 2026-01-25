@@ -149,7 +149,7 @@ export function Sidebar({
 
           {/* New Session Button */}
           <button
-            className="w-full rounded-xl bg-accent-500 hover:bg-accent-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:shadow-glow active:scale-[0.98] group"
+            className="w-full rounded-xl bg-accent-500 hover:bg-accent-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:shadow-md hover:shadow-accent-500/20 active:scale-[0.98] group"
             onClick={onNewSession}
           >
             <span className="flex items-center justify-center gap-2">
@@ -162,7 +162,7 @@ export function Sidebar({
 
           {/* Settings Button */}
           <button
-            className="w-full rounded-xl border border-ink-900/10 bg-surface hover:bg-surface-secondary px-4 py-2.5 text-sm font-medium text-ink-700 transition-all hover:border-ink-900/20 flex items-center justify-center gap-2"
+            className="w-full rounded-xl border border-ink-900/10 bg-surface hover:bg-surface-secondary hover:border-ink-900/20 px-4 py-2.5 text-sm font-medium text-ink-700 transition-all duration-200 flex items-center justify-center gap-2"
             onClick={onOpenSettings}
           >
             <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

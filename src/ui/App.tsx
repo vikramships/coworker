@@ -285,7 +285,7 @@ function App() {
       </ResizablePanel>
 
       {/* Main content area */}
-      <main className={`flex-1 flex flex-col min-w-0 bg-surface-cream pt-12 lg:pt-0 h-full transition-all duration-300 ${
+      <main className={`flex-1 flex flex-col min-w-0 bg-surface-cream pt-12 lg:pt-0 h-full transition-all duration-300 ease-in-out ${
         sidebarCollapsed ? 'lg:ml-[72px]' : 'lg:ml-[200px]'
       } ${rightPanelOpen ? 'mr-[320px]' : ''}`}>
         {/* Header bar with drag region */}
@@ -324,10 +324,10 @@ function App() {
           <div className="flex items-center gap-1" style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}>
             {/* Toggle Files Panel */}
             <button
-              className={`p-2 rounded-lg transition-colors ${
+              className={`p-2 rounded-lg transition-all duration-200 ${
                 rightPanelOpen && rightPanelTab === 'files'
-                  ? "text-accent-600 bg-accent-50"
-                  : "text-ink-500 hover:text-ink-700 hover:bg-surface-secondary"
+                  ? "text-accent-600 bg-accent-50 shadow-sm"
+                  : "text-ink-500 hover:text-ink-700 hover:bg-surface-secondary hover:shadow-sm"
               }`}
               title="Toggle File Explorer"
               onClick={() => {
@@ -346,10 +346,10 @@ function App() {
 
             {/* Toggle Terminal Panel */}
             <button
-              className={`p-2 rounded-lg transition-colors ${
+              className={`p-2 rounded-lg transition-all duration-200 ${
                 rightPanelOpen && rightPanelTab === 'terminal'
-                  ? "text-accent-600 bg-accent-50"
-                  : "text-ink-500 hover:text-ink-700 hover:bg-surface-secondary"
+                  ? "text-accent-600 bg-accent-50 shadow-sm"
+                  : "text-ink-500 hover:text-ink-700 hover:bg-surface-secondary hover:shadow-sm"
               }`}
               title="Toggle Terminal"
               onClick={() => {
@@ -372,7 +372,7 @@ function App() {
 
             {/* Settings */}
             <button
-              className="p-2 rounded-lg text-ink-500 hover:text-ink-700 hover:bg-surface-secondary transition-colors"
+              className="p-2 rounded-lg text-ink-500 hover:text-ink-700 hover:bg-surface-secondary hover:shadow-sm transition-all duration-200"
               title="Settings"
               onClick={() => setShowSettingsModal(true)}
             >

@@ -18,11 +18,16 @@ export function CompactSidebar({
   const sessions = useAppStore((state) => state.sessions);
   const activeSessionId = useAppStore((state) => state.activeSessionId);
 
+  // Sort sessions by most recent
+  const sortedSessions = Object.values(sessions)
+    .sort((a, b) => (b.updatedAt ?? 0) - (a.updatedAt ?? 0))
+    .slice(0, 5);
+
   return (
-    <aside className="fixed left-0 top-0 bottom-0 w-[72px] flex flex-col items-center py-4 border-r border-ink-900/10 bg-surface/80 backdrop-blur-xl z-50">
+    <aside className="fixed left-0 top-0 bottom-0 w-[72px] flex flex-col items-center py-4 border-r border-ink-900/10 bg-surface/80 backdrop-blur-xl z-50 transition-all duration-300">
       {/* Logo */}
       <div
-        className="w-12 h-12 rounded-xl bg-[#0F0F1A] flex items-center justify-center mb-4 cursor-pointer hover:scale-105 transition-transform"
+        className="w-12 h-12 rounded-xl bg-[#0F0F1A] flex items-center justify-center mb-4 cursor-pointer hover:scale-105 hover:shadow-lg transition-all duration-200"
         onClick={onExpand}
       >
         <svg className="h-6 w-6" viewBox="0 0 512 512" fill="none">
@@ -34,24 +39,24 @@ export function CompactSidebar({
 
       {/* New Session Button */}
       <button
-        className="w-12 h-12 rounded-xl bg-accent-500 hover:bg-accent-600 flex items-center justify-center text-white shadow-sm transition-all hover:shadow-md active:scale-[0.95] mb-3"
+        className="w-12 h-12 rounded-xl bg-accent-500 hover:bg-accent-600 flex items-center justify-center text-white shadow-sm transition-all duration-200 hover:shadow-md active:scale-[0.95] mb-3 group"
         onClick={onNewSession}
         title="New Session"
       >
-        <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+        <svg className="h-5 w-5 transition-transform duration-200 group-hover:rotate-90" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
           <path d="M12 5v14M5 12h14" />
         </svg>
       </button>
 
       {/* Session List (Recent) */}
       <div className="flex-1 overflow-y-auto w-full px-2">
-        {Object.values(sessions).slice(0, 5).map((session) => (
+        {sortedSessions.map((session) => (
           <button
             key={session.id}
-            className={`w-full aspect-square rounded-xl mb-2 flex items-center justify-center transition-all ${
+            className={`w-full aspect-square rounded-xl mb-2 flex items-center justify-center transition-all duration-200 group relative ${
               activeSessionId === session.id
-                ? "bg-accent-100 dark:bg-accent-500/20 text-accent-600"
-                : "text-muted hover:bg-surface-secondary hover:text-ink-600"
+                ? "bg-accent-100 dark:bg-accent-500/20 text-accent-600 shadow-sm"
+                : "text-muted hover:bg-surface-secondary hover:text-ink-600 hover:shadow-sm"
             }`}
             onClick={() => useAppStore.getState().setActiveSessionId(session.id)}
             title={session.title || "Untitled"}
@@ -59,6 +64,10 @@ export function CompactSidebar({
             <span className="text-xs font-medium truncate px-1">
               {session.title?.charAt(0) || "?"}
             </span>
+            {/* Tooltip on hover */}
+            <div className="absolute left-full ml-2 px-2 py-1 bg-ink-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+              {session.title || "Untitled"}
+            </div>
           </button>
         ))}
       </div>
@@ -89,7 +98,7 @@ export function CompactSidebar({
         </button>
 
         {/* Connection Status */}
-        <div className={`w-2 h-2 rounded-full mb-2 ${connected ? 'bg-success animate-pulse' : 'bg-muted'}`} title={connected ? "Connected" : "Disconnected"} />
+        <div className={`w-2 h-2 rounded-full mb-2 transition-colors ${connected ? 'bg-success animate-pulse' : 'bg-muted'}`} title={connected ? "Connected" : "Disconnected"} />
       </div>
     </aside>
   );
