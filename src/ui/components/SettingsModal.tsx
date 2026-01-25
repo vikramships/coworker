@@ -314,6 +314,84 @@ export function SettingsModal({ onClose }: SettingsModalProps) {
               </div>
             </label>
 
+            {/* App Preferences */}
+            <div className="border-t border-ink-900/10 pt-5">
+              <p className="text-xs font-medium text-muted uppercase tracking-wider mb-4">Preferences</p>
+
+              <div className="grid gap-4">
+                {/* Default Directory */}
+                <label className="grid gap-1.5">
+                  <span className="text-xs text-muted">Default Working Directory</span>
+                  <input
+                    type="text"
+                    className="rounded-lg border border-ink-900/10 bg-surface-secondary px-3 py-2 text-sm text-ink-800 focus:border-accent-500 focus:outline-none"
+                    placeholder="~/projects"
+                    defaultValue="~"
+                    onBlur={(e) => {
+                      // Could save to settings
+                      console.log('Default directory:', e.target.value);
+                    }}
+                  />
+                </label>
+
+                {/* Terminal Shell */}
+                <label className="grid gap-1.5">
+                  <span className="text-xs text-muted">Terminal Shell</span>
+                  <select
+                    className="rounded-lg border border-ink-900/10 bg-surface-secondary px-3 py-2 text-sm text-ink-800 focus:border-accent-500 focus:outline-none"
+                    defaultValue="bash"
+                  >
+                    <option value="bash">Bash</option>
+                    <option value="zsh">Zsh</option>
+                    <option value="fish">Fish</option>
+                    <option value="/bin/sh">Sh</option>
+                  </select>
+                </label>
+
+                {/* Auto-save conversations */}
+                <div className="flex items-center justify-between py-1">
+                  <div className="grid gap-0.5">
+                    <span className="text-sm text-ink-700">Auto-save conversations</span>
+                    <span className="text-xs text-muted">Automatically save chat history</span>
+                  </div>
+                  <button
+                    type="button"
+                    className="w-10 h-6 rounded-full bg-accent transition-colors relative"
+                  >
+                    <span className="absolute right-1 top-1 w-4 h-4 rounded-full bg-white shadow-sm" />
+                  </button>
+                </div>
+
+                {/* Syntax highlighting */}
+                <div className="flex items-center justify-between py-1">
+                  <div className="grid gap-0.5">
+                    <span className="text-sm text-ink-700">Syntax highlighting</span>
+                    <span className="text-xs text-muted">Colorize code blocks in chat</span>
+                  </div>
+                  <button
+                    type="button"
+                    className="w-10 h-6 rounded-full bg-accent transition-colors relative"
+                  >
+                    <span className="absolute right-1 top-1 w-4 h-4 rounded-full bg-white shadow-sm" />
+                  </button>
+                </div>
+
+                {/* Word wrap */}
+                <div className="flex items-center justify-between py-1">
+                  <div className="grid gap-0.5">
+                    <span className="text-sm text-ink-700">Word wrap</span>
+                    <span className="text-xs text-muted">Wrap long lines in code blocks</span>
+                  </div>
+                  <button
+                    type="button"
+                    className="w-10 h-6 rounded-full bg-surface-secondary border border-ink-900/10 transition-colors relative"
+                  >
+                    <span className="absolute left-1 top-1 w-4 h-4 rounded-full bg-ink-400 shadow-sm" />
+                  </button>
+                </div>
+              </div>
+            </div>
+
             <div className="border-t border-ink-900/10 pt-5">
               <div className="flex items-center justify-between mb-3">
                 <p className="text-xs font-medium text-muted">API Providers</p>

@@ -25,10 +25,17 @@ export default defineConfig(({ mode }) => {
 						if (id.includes('react-markdown') || id.includes('remark-gfm')) {
 							return 'markdown';
 						}
+						// Split heavy UI components
+						if (id.includes('xterm')) {
+							return 'terminal-vendor';
+						}
+						if (id.includes('zustand')) {
+							return 'state-vendor';
+						}
 					},
 				},
 			},
-			chunkSizeWarningLimit: 600,
+			chunkSizeWarningLimit: 500,
 		},
 		server: {
 			port, // MUST BE LOWERCASE

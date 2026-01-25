@@ -12,7 +12,6 @@ export function useIDE() {
   const [activeTabId, setActiveTabId] = useState<string | null>(null);
   const [showFileExplorer, setShowFileExplorer] = useState(true);
   const [showTerminal, setShowTerminal] = useState(false);
-  const [showGitPanel, setShowGitPanel] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
   const addTab = useCallback((tab: {
@@ -64,10 +63,6 @@ export function useIDE() {
     setShowTerminal(prev => !prev);
   }, []);
 
-  const toggleGitPanel = useCallback(() => {
-    setShowGitPanel(prev => !prev);
-  }, []);
-
   const createNewTerminalTab = useCallback(() => {
     const newTabId = Date.now().toString();
     setActiveTabId(newTabId);
@@ -89,7 +84,6 @@ export function useIDE() {
       activeTabId,
       showFileExplorer,
       showTerminal,
-      showGitPanel,
       searchQuery,
     },
     actions: {
@@ -100,7 +94,6 @@ export function useIDE() {
       markTabSaved,
       toggleFileExplorer,
       toggleTerminal,
-      toggleGitPanel,
       createNewTerminalTab,
       setSearchQuery,
       setEditorTabs,
