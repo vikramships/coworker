@@ -58,7 +58,7 @@ function getDefaultConfig(): FullConfig {
     version: CONFIG_VERSION,
     hasCompletedOnboarding: false,
     userProfile: { name: "" },
-    aiProfile: { name: "Claude" },
+    aiProfile: { name: "Coworker" },
     preferences: {
       defaultWorkingDir: "~",
       terminalShell: "bash",
