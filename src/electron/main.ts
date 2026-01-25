@@ -416,11 +416,11 @@ app.on("ready", () => {
     });
 
     ipcMainHandle("native-get-platform", () => {
-        return std::env::consts::OS.to_string();
+        return process.platform;
     });
 
     ipcMainHandle("native-get-arch", () => {
-        return std::env::consts::ARCH.to_string();
+        return process.arch;
     });
 
     // Listen to system theme changes
