@@ -83,6 +83,8 @@ electron.contextBridge.exposeInMainWorld("electron", {
         ipcInvoke("generate-session-title", userInput),
     getRecentCwds: (limit?: number) =>
         ipcInvoke("get-recent-cwds", limit),
+    getHomeDir: () =>
+        ipcInvoke("get-home-dir"),
     selectDirectory: () =>
         ipcInvoke("select-directory"),
     selectImage: () =>

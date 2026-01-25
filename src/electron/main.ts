@@ -7,7 +7,7 @@ import { generateSessionTitle } from "./libs/util.js";
 import type { ClientEvent } from "./types.js";
 import { loadApiConfig, saveApiConfig, type Theme, type ProviderConfig, type AppConfig } from "./libs/config-store.js";
 import { shell } from "electron";
-import { join } from "path";
+import { join, homedir } from "path";
 import { writeFileSync, existsSync, mkdirSync, readdirSync, statSync } from "fs";
 import { readFile as readFilePromise, writeFile as writeFilePromise } from "fs/promises";
 import "./libs/claude-settings.js";
@@ -50,6 +50,11 @@ app.on("ready", () => {
     ipcMainHandle("get-recent-cwds", (_: IpcMainInvokeEvent, limit?: number) => {
         const boundedLimit = limit ? Math.min(Math.max(limit, 1), 20) : 8;
         return sessions().listRecentCwds(boundedLimit);
+    });
+
+    // Handle get home directory
+    ipcMainHandle("get-home-dir", () => {
+        return homedir();
     });
 
     // Handle directory selection

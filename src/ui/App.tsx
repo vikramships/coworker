@@ -27,6 +27,18 @@ function App() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true); // Default to collapsed
   const [rightPanelOpen, setRightPanelOpen] = useState(false);
   const [rightPanelTab, setRightPanelTab] = useState<'files' | 'terminal'>('files');
+  const [defaultCwd, setDefaultCwd] = useState<string>('~');
+
+  // Get home directory on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.electron) {
+      window.electron.getHomeDir().then(setDefaultCwd).catch(() => {
+        // Fallback to common paths
+        const possiblePaths = ['/Users', '/home'];
+        setDefaultCwd(possiblePaths.find(p => p) || '~');
+      });
+    }
+  }, []);
 
   // Consolidated state selectors to prevent multiple re-renders
   const appState = useAppStore(useShallow((s) => ({
@@ -261,11 +273,11 @@ function App() {
           <div className="flex-1 overflow-hidden">
             {rightPanelTab === 'files' ? (
               <div className="h-full overflow-y-auto">
-                <FileTree rootPath={cwd || '/root'} onFileSelect={(path) => console.log('File selected:', path)} />
+                <FileTree rootPath={cwd || defaultCwd} onFileSelect={(path) => console.log('File selected:', path)} />
               </div>
             ) : (
               <div className="h-full">
-                <Terminal cwd={cwd || '~'} className="h-full" onCommand={(cmd) => console.log('Command:', cmd)} />
+                <Terminal cwd={cwd || defaultCwd} className="h-full" onCommand={(cmd) => console.log('Command:', cmd)} />
               </div>
             )}
           </div>

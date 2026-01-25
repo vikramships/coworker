@@ -34,6 +34,7 @@ type EventPayloadMapping = {
     getStaticData: StaticData;
     "generate-session-title": string;
     "get-recent-cwds": string[];
+    "get-home-dir": string;
     "select-directory": string | null;
     "select-image": string | null;
 
@@ -64,6 +65,7 @@ interface Window {
         onServerEvent: (callback: (event: any) => void) => UnsubscribeFunction;
         generateSessionTitle: (userInput: string | null) => Promise<string>;
         getRecentCwds: (limit?: number) => Promise<string[]>;
+        getHomeDir: () => Promise<string>;
         selectDirectory: () => Promise<string | null>;
         selectImage: () => Promise<string | null>;
 
