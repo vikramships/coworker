@@ -118,6 +118,28 @@ electron.contextBridge.exposeInMainWorld("electron", {
         return () => electron.ipcRenderer.off("theme-changed", cb);
     },
 
+    // Full config APIs (onboarding & settings)
+    getFullConfig: () =>
+        ipcInvoke("get-full-config"),
+    hasCompletedOnboarding: () =>
+        ipcInvoke("has-completed-onboarding"),
+    completeOnboarding: () =>
+        ipcInvoke("complete-onboarding"),
+    saveUserProfile: (profile: { name: string }) =>
+        ipcInvoke("save-user-profile", profile),
+    saveAiProfile: (profile: { name: string }) =>
+        ipcInvoke("save-ai-profile", profile),
+    getPreferences: () =>
+        ipcInvoke("get-preferences"),
+    savePreferences: (prefs: {
+        defaultWorkingDir?: string;
+        terminalShell?: string;
+        autoSaveConversations?: boolean;
+        syntaxHighlighting?: boolean;
+        wordWrap?: boolean;
+    }) =>
+        ipcInvoke("save-preferences", prefs),
+
     // File operations for IDE mode
     readFile: (filePath: string) =>
         ipcInvoke("read-file", filePath),

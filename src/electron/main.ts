@@ -5,7 +5,7 @@ import { getStaticData, pollResources } from "./test.js";
 import { handleClientEvent, sessions } from "./ipc-handlers.js";
 import { generateSessionTitle } from "./libs/util.js";
 import type { ClientEvent } from "./types.js";
-import { loadApiConfig, saveApiConfig, type Theme, type ProviderConfig, type AppConfig } from "./libs/config-store.js";
+import { loadFullConfig, saveFullConfig, completeOnboarding, getUserProfile, saveUserProfile, getAiProfile, saveAiProfile, getPreferences, savePreferences, loadApiConfig, saveApiConfig, type Theme, type AppConfig } from "./libs/config-store.js";
 import { shell } from "electron";
 import { join, dirname, homedir } from "path";
 import { writeFileSync, existsSync, mkdirSync, readdirSync, statSync, readdir as readdirSync } from "fs";
@@ -282,6 +282,57 @@ app.on("ready", () => {
             return { success: true, theme: effectiveTheme };
         } catch (error) {
             console.error("[main] Failed to save theme:", error);
+            return { success: false, error: String(error) };
+        }
+    });
+
+    // Full config handlers (for onboarding and settings)
+    ipcMainHandle("get-full-config", () => {
+        return loadFullConfig();
+    });
+
+    ipcMainHandle("has-completed-onboarding", () => {
+        return hasCompletedOnboarding();
+    });
+
+    ipcMainHandle("complete-onboarding", () => {
+        completeOnboarding();
+        return { success: true };
+    });
+
+    ipcMainHandle("save-user-profile", (_: IpcMainInvokeEvent, profile: { name: string }) => {
+        try {
+            saveUserProfile(profile);
+            return { success: true };
+        } catch (error) {
+            return { success: false, error: String(error) };
+        }
+    });
+
+    ipcMainHandle("save-ai-profile", (_: IpcMainInvokeEvent, profile: { name: string }) => {
+        try {
+            saveAiProfile(profile);
+            return { success: true };
+        } catch (error) {
+            return { success: false, error: String(error) };
+        }
+    });
+
+    ipcMainHandle("get-preferences", () => {
+        return getPreferences();
+    });
+
+    ipcMainHandle("save-preferences", (_: IpcMainInvokeEvent, prefs: {
+        defaultWorkingDir?: string;
+        terminalShell?: string;
+        autoSaveConversations?: boolean;
+        syntaxHighlighting?: boolean;
+        wordWrap?: boolean;
+    }) => {
+        try {
+            savePreferences(prefs);
+            return { success: true };
+        } catch (error) {
             return { success: false, error: String(error) };
         }
     });

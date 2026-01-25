@@ -20,69 +20,93 @@ export type AppConfig = {
   theme?: Theme;
 };
 
+export type UserProfile = {
+  name: string;
+};
+
+export type AiProfile = {
+  name: string;
+};
+
+export type AppPreferences = {
+  defaultWorkingDir: string;
+  terminalShell: string;
+  autoSaveConversations: boolean;
+  syntaxHighlighting: boolean;
+  wordWrap: boolean;
+};
+
+export type FullConfig = {
+  version: string;
+  hasCompletedOnboarding: boolean;
+  userProfile: UserProfile;
+  aiProfile: AiProfile;
+  preferences: AppPreferences;
+  api: AppConfig;
+};
+
 const CONFIG_FILE_NAME = "coworker.json";
+const CONFIG_VERSION = "1.0.0";
 
 function getConfigPath(): string {
   const userDataPath = app.getPath("userData");
   return join(userDataPath, CONFIG_FILE_NAME);
 }
 
-export function loadApiConfig(): AppConfig | null {
+function getDefaultConfig(): FullConfig {
+  return {
+    version: CONFIG_VERSION,
+    hasCompletedOnboarding: false,
+    userProfile: { name: "" },
+    aiProfile: { name: "Claude" },
+    preferences: {
+      defaultWorkingDir: "~",
+      terminalShell: "bash",
+      autoSaveConversations: true,
+      syntaxHighlighting: true,
+      wordWrap: false,
+    },
+    api: {
+      activeProvider: "default",
+      providers: [{
+        id: "default",
+        name: "Default Provider",
+        apiType: "anthropic",
+        apiKey: "",
+        baseURL: "",
+        model: ""
+      }],
+      theme: "system"
+    }
+  };
+}
+
+export function loadFullConfig(): FullConfig {
   try {
     const configPath = getConfigPath();
     if (!existsSync(configPath)) {
-      return null;
+      return getDefaultConfig();
     }
     const raw = readFileSync(configPath, "utf8");
     const parsed = JSON.parse(raw);
-
-    // Handle new multi-provider structure
-    if (parsed.providers && Array.isArray(parsed.providers)) {
-      return parsed as AppConfig;
-    }
-
-    // Handle new flat structure (backward compatibility)
-    if (parsed.apiKey && parsed.baseURL && parsed.model) {
-      const provider: ProviderConfig = {
-        id: "default",
-        name: "Default Provider",
-        apiType: parsed.apiType || "anthropic",
-        apiKey: parsed.apiKey,
-        baseURL: parsed.baseURL,
-        model: parsed.model
-      };
-      return {
-        activeProvider: "default",
-        providers: [provider],
-        theme: parsed.theme
-      };
-    }
-
-    // Fallback to old nested structure for backward compatibility
-    if (parsed.api) {
-      const provider: ProviderConfig = {
-        id: "default",
-        name: "Default Provider",
-        apiType: parsed.api.provider || "anthropic",
-        apiKey: parsed.api.key,
-        baseURL: parsed.api.base_url,
-        model: parsed.api.model
-      };
-      return {
-        activeProvider: "default",
-        providers: [provider],
-        theme: parsed.ui?.theme
-      };
-    }
-
-    return null;
+    
+    // Merge with defaults for missing fields
+    const defaults = getDefaultConfig();
+    return {
+      ...defaults,
+      ...parsed,
+      preferences: { ...defaults.preferences, ...(parsed.preferences || {}) },
+      userProfile: { ...defaults.userProfile, ...(parsed.userProfile || {}) },
+      aiProfile: { ...defaults.aiProfile, ...(parsed.aiProfile || {}) },
+      api: parsed.api || defaults.api
+    };
   } catch (error) {
-    console.error("[config-store] Failed to load API config:", error);
-    return null;
+    console.error("[config-store] Failed to load config:", error);
+    return getDefaultConfig();
   }
 }
 
-export function saveApiConfig(config: AppConfig): void {
+export function saveFullConfig(config: FullConfig): void {
   try {
     const configPath = getConfigPath();
     const userDataPath = app.getPath("userData");
@@ -91,62 +115,52 @@ export function saveApiConfig(config: AppConfig): void {
       mkdirSync(userDataPath, { recursive: true });
     }
 
-    // Validate that we have at least one provider
-    if (!config.providers || config.providers.length === 0) {
-      throw new Error("Invalid config: at least one provider is required");
-    }
-
-    // Validate the active provider exists
-    const activeProvider = config.providers.find(p => p.id === config.activeProvider);
-    if (!activeProvider) {
-      throw new Error("Invalid config: active provider not found");
-    }
-
-    // Create a clean, readable config structure
-    const formattedConfig = {
-      activeProvider: config.activeProvider,
-      providers: config.providers,
-      theme: config.theme || "system"
-    };
-
-    const jsonString = JSON.stringify(formattedConfig, null, 2);
+    const jsonString = JSON.stringify(config, null, 2);
     writeFileSync(configPath, jsonString, "utf8");
-    console.info("[config-store] API config saved successfully");
+    console.info("[config-store] Config saved successfully");
   } catch (error) {
-    console.error("[config-store] Failed to save API config:", error);
+    console.error("[config-store] Failed to save config:", error);
     throw error;
   }
 }
 
-export function deleteApiConfig(): void {
-  try {
-    const configPath = getConfigPath();
-    if (existsSync(configPath)) {
-      unlinkSync(configPath);
-      console.info("[config-store] API config deleted");
-    }
-  } catch (error) {
-    console.error("[config-store] Failed to delete API config:", error);
-  }
+export function hasCompletedOnboarding(): boolean {
+  const config = loadFullConfig();
+  return config.hasCompletedOnboarding;
 }
 
-// Legacy compatibility: get the active provider as a single config
-export function getActiveProviderConfig(): { apiKey: string; baseURL: string; model: string; apiType: ApiType } | null {
-  const config = loadApiConfig();
-  if (!config) return null;
-
-  const activeProvider = config.providers.find(p => p.id === config.activeProvider);
-  if (!activeProvider) return null;
-
-  return {
-    apiKey: activeProvider.apiKey,
-    baseURL: activeProvider.baseURL,
-    model: activeProvider.model,
-    apiType: activeProvider.apiType
-  };
+export function completeOnboarding(): void {
+  const config = loadFullConfig();
+  config.hasCompletedOnboarding = true;
+  saveFullConfig(config);
 }
 
-export function getEffectiveTheme(theme: Theme = "system"): "light" | "dark" {
-  if (theme !== "system") return theme;
-  return "light";
+export function getUserProfile(): UserProfile {
+  return loadFullConfig().userProfile;
+}
+
+export function saveUserProfile(profile: UserProfile): void {
+  const config = loadFullConfig();
+  config.userProfile = profile;
+  saveFullConfig(config);
+}
+
+export function getAiProfile(): AiProfile {
+  return loadFullConfig().aiProfile;
+}
+
+export function saveAiProfile(profile: AiProfile): void {
+  const config = loadFullConfig();
+  config.aiProfile = profile;
+  saveFullConfig(config);
+}
+
+export function getPreferences(): AppPreferences {
+  return loadFullConfig().preferences;
+}
+
+export function savePreferences(prefs: Partial<AppPreferences>): void {
+  const config = loadFullConfig();
+  config.preferences = { ...config.preferences, ...prefs };
+  saveFullConfig(config);
 }

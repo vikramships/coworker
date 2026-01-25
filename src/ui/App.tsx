@@ -9,6 +9,7 @@ import { CompactSidebar } from "./components/CompactSidebar";
 import { ResizablePanel } from "./components/ResizablePanel";
 import { StartSessionModal } from "./components/StartSessionModal";
 import { SettingsModal } from "./components/SettingsModal";
+import { OnboardingModal } from "./components/OnboardingModal";
 import { PromptInput, usePromptActions } from "./components/PromptInput";
 import { MessageCard } from "./components/EventCard";
 import { ToastContainer } from "./components/Toast";
@@ -26,6 +27,7 @@ function App() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true); // Default to collapsed
   const [rightPanelOpen, setRightPanelOpen] = useState(false);
   const [defaultCwd, setDefaultCwd] = useState<string>('~');
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   // Get home directory on mount
   useEffect(() => {
@@ -34,6 +36,17 @@ function App() {
         // Fallback to common paths
         const possiblePaths = ['/Users', '/home'];
         setDefaultCwd(possiblePaths.find(p => p) || '~');
+      });
+    }
+  }, []);
+
+  // Check if onboarding is needed
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.electron) {
+      window.electron.hasCompletedOnboarding().then((completed: boolean) => {
+        if (!completed) {
+          setShowOnboarding(true);
+        }
       });
     }
   }, []);
@@ -435,6 +448,15 @@ function App() {
       {showSettingsModal && (
         <SettingsModal
           onClose={() => setShowSettingsModal(false)}
+        />
+      )}
+
+      {/* Onboarding Modal */}
+      {showOnboarding && (
+        <OnboardingModal
+          onComplete={() => {
+            setShowOnboarding(false);
+          }}
         />
       )}
 

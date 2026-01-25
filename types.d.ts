@@ -29,6 +29,31 @@ type AppConfig = {
     theme?: Theme;
 };
 
+type UserProfile = {
+    name: string;
+};
+
+type AiProfile = {
+    name: string;
+};
+
+type AppPreferences = {
+    defaultWorkingDir: string;
+    terminalShell: string;
+    autoSaveConversations: boolean;
+    syntaxHighlighting: boolean;
+    wordWrap: boolean;
+};
+
+type FullConfig = {
+    version: string;
+    hasCompletedOnboarding: boolean;
+    userProfile: UserProfile;
+    aiProfile: AiProfile;
+    preferences: AppPreferences;
+    api: AppConfig;
+};
+
 type EventPayloadMapping = {
     statistics: Statistics;
     getStaticData: StaticData;
@@ -49,6 +74,14 @@ type EventPayloadMapping = {
     "save-api-config": { success: boolean; error?: string };
     "get-theme": "light" | "dark";
     "save-theme": { success: boolean; error?: string; theme?: "light" | "dark" };
+    // Full config APIs (onboarding & settings)
+    "get-full-config": FullConfig;
+    "has-completed-onboarding": boolean;
+    "complete-onboarding": { success: boolean };
+    "save-user-profile": { success: boolean; error?: string };
+    "save-ai-profile": { success: boolean; error?: string };
+    "get-preferences": AppPreferences;
+    "save-preferences": { success: boolean; error?: string };
     // File operations for IDE mode
     "read-file": { success: boolean; content?: string; error?: string };
     "write-file": { success: boolean; error?: string };
@@ -91,6 +124,14 @@ interface Window {
         getTheme: () => Promise<"light" | "dark">;
         saveTheme: (theme: Theme) => Promise<{ success: boolean; error?: string; theme?: "light" | "dark" }>;
         onThemeChanged: (callback: (theme: "light" | "dark") => void) => UnsubscribeFunction;
+        // Full config APIs (onboarding & settings)
+        getFullConfig: () => Promise<FullConfig>;
+        hasCompletedOnboarding: () => Promise<boolean>;
+        completeOnboarding: () => Promise<{ success: boolean }>;
+        saveUserProfile: (profile: UserProfile) => Promise<{ success: boolean; error?: string }>;
+        saveAiProfile: (profile: AiProfile) => Promise<{ success: boolean; error?: string }>;
+        getPreferences: () => Promise<AppPreferences>;
+        savePreferences: (prefs: Partial<AppPreferences>) => Promise<{ success: boolean; error?: string }>;
         // File operations for IDE mode
         readFile: (filePath: string) => Promise<{ success: boolean; content?: string; error?: string }>;
         writeFile: (filePath: string, content: string) => Promise<{ success: boolean; error?: string }>;
