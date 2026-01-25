@@ -57,6 +57,47 @@ app.on("ready", () => {
         return homedir();
     });
 
+    // Handle command execution
+    ipcMainHandle("execute-command", async (_: IpcMainInvokeEvent, payload: { command: string; cwd: string; timeout?: number }) => {
+        const { command, cwd, timeout = 30000 } = payload;
+        try {
+            const { exec } = await import('child_process');
+            const { promisify } = await import('util');
+            const execAsync = promisify(exec);
+
+            // Change to the specified directory
+            process.chdir(cwd);
+
+            const { stdout, stderr } = await execAsync(command, {
+                timeout,
+                maxBuffer: 1024 * 1024 // 1MB
+            });
+
+            return {
+                success: true,
+                stdout: stdout || '',
+                stderr: stderr || '',
+                cwd: process.cwd()
+            };
+        } catch (error: any) {
+            // Handle timeout and other errors
+            if (error.killed || error.signal === 'SIGTERM') {
+                return {
+                    success: false,
+                    error: 'Command timed out',
+                    stdout: error.stdout || '',
+                    stderr: error.stderr || ''
+                };
+            }
+            return {
+                success: false,
+                error: error.message || 'Unknown error',
+                stdout: error.stdout || '',
+                stderr: error.stderr || ''
+            };
+        }
+    });
+
     // Handle directory selection
     ipcMainHandle("select-directory", async () => {
         const result = await dialog.showOpenDialog(mainWindow, {

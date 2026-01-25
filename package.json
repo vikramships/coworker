@@ -39,6 +39,8 @@
 		"remark-gfm": "^4.0.1",
 		"tailwindcss": "^4.1.18",
 		"vite-tsconfig-paths": "^6.0.3",
+		"xterm": "^5.3.0",
+		"xterm-addon-fit": "^0.8.0",
 		"zustand": "^5.0.10"
 	},
 	"devDependencies": {

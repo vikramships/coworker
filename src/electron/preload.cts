@@ -85,6 +85,8 @@ electron.contextBridge.exposeInMainWorld("electron", {
         ipcInvoke("get-recent-cwds", limit),
     getHomeDir: () =>
         ipcInvoke("get-home-dir"),
+    executeCommand: (payload: { command: string; cwd: string; timeout?: number }) =>
+        ipcInvoke("execute-command", payload),
     selectDirectory: () =>
         ipcInvoke("select-directory"),
     selectImage: () =>

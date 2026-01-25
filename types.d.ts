@@ -35,6 +35,7 @@ type EventPayloadMapping = {
     "generate-session-title": string;
     "get-recent-cwds": string[];
     "get-home-dir": string;
+    "execute-command": { success: boolean; stdout?: string; stderr?: string; error?: string; cwd?: string };
     "select-directory": string | null;
     "select-image": string | null;
 
@@ -66,6 +67,7 @@ interface Window {
         generateSessionTitle: (userInput: string | null) => Promise<string>;
         getRecentCwds: (limit?: number) => Promise<string[]>;
         getHomeDir: () => Promise<string>;
+        executeCommand: (payload: { command: string; cwd: string; timeout?: number }) => Promise<{ success: boolean; stdout?: string; stderr?: string; error?: string; cwd?: string }>;
         selectDirectory: () => Promise<string | null>;
         selectImage: () => Promise<string | null>;
 
